@@ -87,7 +87,7 @@ class _KategoriScreenState extends State<KategoriScreen> {
   }
 
   void _showEditKategori(KategoriModel kategori) {
-    print('Edit kategori: $kategori'); // Debug log
+    print('Edit kategori: $kategori'); 
     showDialog(
       context: context,
       builder: (context) => TambahEditKategoriDialog(
@@ -98,7 +98,7 @@ class _KategoriScreenState extends State<KategoriScreen> {
   }
 
   void _showDeleteKategori(KategoriModel kategori) {
-    print('Hapus kategori: $kategori'); // Debug log
+    print('Hapus kategori: $kategori'); 
     showDialog(
       context: context,
       builder: (context) => HapusKategoriDialog(
@@ -138,7 +138,6 @@ class _KategoriScreenState extends State<KategoriScreen> {
           style: TextStyle(color: Colors.black),
         ),
         actions: [
-          // Tombol refresh
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.black),
             onPressed: _loadKategori,
@@ -150,7 +149,6 @@ class _KategoriScreenState extends State<KategoriScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            /// SEARCH + ADD
             Row(
               children: [
                 Expanded(
@@ -195,7 +193,6 @@ class _KategoriScreenState extends State<KategoriScreen> {
 
             const SizedBox(height: 24),
 
-            /// LOADING / DATA
             Expanded(
               child: _isLoading
                   ? const Center(
@@ -271,7 +268,6 @@ class _KategoriCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Icon kategori
           Container(
             width: 50,
             height: 50,
@@ -303,7 +299,6 @@ class _KategoriCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    // Tampilkan ID untuk debugging
                     Text(
                       'ID: ${kategori.idKategori}',
                       style: const TextStyle(
@@ -360,21 +355,19 @@ class _KategoriCard extends StatelessWidget {
             ),
           ),
 
-          /// EDIT
           IconButton(
             icon: const Icon(Icons.edit, size: 20, color: Colors.blue),
             onPressed: onEdit,
             tooltip: 'Edit kategori',
           ),
 
-          /// DELETE - SEMUA BISA DIHAPUS
           IconButton(
             icon: Icon(
               Icons.delete,
               size: 20,
               color: Colors.red,
             ),
-            onPressed: onDelete, // Selalu aktif
+            onPressed: onDelete, 
             tooltip: 'Hapus kategori (${kategori.jumlahAlat} alat akan diupdate)',
           ),
         ],

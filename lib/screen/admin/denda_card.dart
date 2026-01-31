@@ -54,7 +54,6 @@ class DendaCard extends StatelessWidget {
             ),
           ),
 
-          /// EDIT
           IconButton(
             icon: const Icon(Icons.edit, size: 18),
             onPressed: () {
@@ -67,7 +66,6 @@ class DendaCard extends StatelessWidget {
             },
           ),
 
-          /// DELETE
           IconButton(
             icon: const Icon(Icons.delete, size: 18),
             onPressed: () {

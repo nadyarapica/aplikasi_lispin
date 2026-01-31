@@ -26,7 +26,6 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     super.initState();
     _loadPengguna();
     
-    // Listen to search text changes
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -64,7 +63,6 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
 
     setState(() => _isSearching = true);
     
-    // Filter lokal
     final filtered = _penggunaList.where((pengguna) {
       return pengguna.nama.toLowerCase().contains(query.toLowerCase()) ||
              pengguna.username.toLowerCase().contains(query.toLowerCase()) ||
@@ -140,7 +138,6 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     try {
       await _penggunaService.hapusPengguna(pengguna.idUser);
       
-      // Refresh list
       await _loadPengguna();
       
       ScaffoldMessenger.of(context).showSnackBar(
@@ -206,7 +203,6 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // SEARCH + ADD BUTTON
             Row(
               children: [
                 Expanded(

@@ -1,4 +1,3 @@
-// screen/admin/alat_screen.dart
 import 'package:aplikasi_lispin/models/alat_models.dart';
 import 'package:aplikasi_lispin/screen/admin/tambah_alat_dialog.dart';
 import 'package:aplikasi_lispin/screen/admin/widgets/sidebar.dart';
@@ -76,7 +75,6 @@ class _AlatScreenState extends State<AlatScreen> {
 
     setState(() => _isSearching = true);
     
-    // Filter berdasarkan pencarian dan kategori
     List<AlatModel> filtered = _alatList;
     
     if (query.isNotEmpty) {
@@ -303,7 +301,6 @@ class _AlatScreenState extends State<AlatScreen> {
 
             const SizedBox(height: 16),
 
-            // GRID ALAT
             Expanded(
               child: _isLoading
                   ? const Center(

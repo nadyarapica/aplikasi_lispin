@@ -3,9 +3,6 @@ import 'package:aplikasi_lispin/services/kategori_service.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// ============================================
-/// DIALOG TAMBAH/EDIT KATEGORI
-/// ============================================
 class TambahEditKategoriDialog extends StatefulWidget {
   final KategoriModel? kategori;
   final VoidCallback? onDataUpdated;
@@ -59,7 +56,6 @@ class _TambahEditKategoriDialogState extends State<TambahEditKategoriDialog> {
 
     try {
       if (_isEditMode && _kategoriId != null) {
-        // UPDATE KATEGORI
         print('Mengupdate kategori ID: $_kategoriId');
         
         await _kategoriService.updateKategori(
@@ -75,7 +71,6 @@ class _TambahEditKategoriDialogState extends State<TambahEditKategoriDialog> {
           ),
         );
       } else {
-        // TAMBAH KATEGORI BARU
         final result = await _kategoriService.tambahKategori(
           namaKategori: _namaController.text,
           deskripsi: _deskripsiController.text,
@@ -147,7 +142,6 @@ class _TambahEditKategoriDialogState extends State<TambahEditKategoriDialog> {
 
               const SizedBox(height: 20),
 
-              /// NAMA KATEGORI
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -298,9 +292,6 @@ class _TambahEditKategoriDialogState extends State<TambahEditKategoriDialog> {
   }
 }
 
-/// ============================================
-/// DIALOG HAPUS KATEGORI - VERSI SELALU BISA HAPUS
-/// ============================================
 class HapusKategoriDialog extends StatefulWidget {
   final KategoriModel kategori;
   final VoidCallback? onDataUpdated;
@@ -327,9 +318,7 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
     try {
       print('Menghapus kategori dengan ID: ${widget.kategori.idKategori}');
       
-      // 1. Jika ada alat dan user memilih untuk menghapus alat juga
       if (widget.kategori.jumlahAlat > 0 && _hapusAlatJuga) {
-        // Hapus semua alat yang terkait dulu
         await _supabase
             .from('alat')
             .delete()
@@ -337,9 +326,7 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
         
         print('Menghapus ${widget.kategori.jumlahAlat} alat terkait');
       }
-      // 2. Jika ada alat tapi user TIDAK memilih untuk menghapus alat
       else if (widget.kategori.jumlahAlat > 0 && !_hapusAlatJuga) {
-        // Update alat untuk set id_kategori menjadi NULL
         await _supabase
             .from('alat')
             .update({'id_kategori': null})
@@ -348,7 +335,6 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
         print('Mengupdate ${widget.kategori.jumlahAlat} alat menjadi tanpa kategori');
       }
 
-      // 3. Hapus kategori
       await _kategoriService.hapusKategori(widget.kategori.idKategori);
       
       if (widget.onDataUpdated != null) {
@@ -389,7 +375,6 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            /// TITLE
             const Text(
               "Hapus Kategori",
               style: TextStyle(
@@ -400,7 +385,6 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
 
             const SizedBox(height: 20),
 
-            /// ICON PERINGATAN
             Icon(
               Icons.warning_amber_rounded,
               size: 64,
@@ -409,7 +393,6 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
 
             const SizedBox(height: 16),
 
-            /// KONFIRMASI TEKS
             Text(
               "Apakah kamu yakin ingin menghapus kategori ini?",
               textAlign: TextAlign.center,
@@ -421,7 +404,6 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
 
             const SizedBox(height: 8),
 
-            /// NAMA KATEGORI
             Text(
               '"${widget.kategori.namaKategori}"',
               textAlign: TextAlign.center,
@@ -432,11 +414,9 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
               ),
             ),
 
-            /// INFO JUMLAH ALAT
             if (widget.kategori.jumlahAlat > 0) ...[
               const SizedBox(height: 16),
               
-              // Pilihan untuk alat
               Card(
                 color: Colors.orange.withOpacity(0.1),
                 child: Padding(
@@ -463,7 +443,6 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
                         style: const TextStyle(fontSize: 14),
                       ),
                       
-                      // Radio pilihan
                       Column(
                         children: [
                           RadioListTile<bool>(
@@ -500,7 +479,6 @@ class _HapusKategoriDialogState extends State<HapusKategoriDialog> {
 
             const SizedBox(height: 24),
 
-            /// BUTTONS
             Row(
               children: [
                 Expanded(

@@ -4,9 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class KategoriService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  /// =====================
-  /// GET ALL KATEGORI dengan jumlah alat
-  /// =====================
   Future<List<KategoriModel>> getKategori() async {
     try {
       final response = await _supabase
@@ -27,14 +24,14 @@ class KategoriService {
         final jumlahAlat = alatList.length;
         
         kategoriList.add(KategoriModel(
-          idKategori: item['id_kategori'] as int, // Pastikan tipe data int
+          idKategori: item['id_kategori'] as int, 
           namaKategori: item['nama_kategori']?.toString() ?? '',
           deskripsi: item['deskripsi']?.toString() ?? '',
           jumlahAlat: jumlahAlat,
         ));
       }
       
-      print('Jumlah kategori: ${kategoriList.length}'); // Debug log
+      print('Jumlah kategori: ${kategoriList.length}'); 
       return kategoriList;
     } catch (e) {
       print('Error get kategori: $e');
@@ -42,9 +39,6 @@ class KategoriService {
     }
   }
 
-  /// =====================
-  /// SEARCH KATEGORI
-  /// =====================
   Future<List<KategoriModel>> searchKategori(String keyword) async {
     try {
       final response = await _supabase
@@ -77,9 +71,6 @@ class KategoriService {
     }
   }
 
-  /// =====================
-  /// TAMBAH KATEGORI
-  /// =====================
   Future<Map<String, dynamic>> tambahKategori({
     required String namaKategori,
     required String deskripsi,
@@ -91,10 +82,10 @@ class KategoriService {
             'nama_kategori': namaKategori,
             'deskripsi': deskripsi,
           })
-          .select() // Ambil data yang baru saja diinsert
-          .single(); // Hanya ambil satu row
+          .select() 
+          .single(); 
 
-      print('Response tambah: $response'); // Debug log
+      print('Response tambah: $response');
       
       return {
         'success': true,
@@ -107,9 +98,6 @@ class KategoriService {
     }
   }
 
-  /// =====================
-  /// UPDATE KATEGORI
-  /// =====================
   Future<void> updateKategori({
     required int idKategori,
     required String namaKategori,
@@ -127,7 +115,7 @@ class KategoriService {
           .eq('id_kategori', idKategori)
           .select();
 
-      print('Update response: $response'); // Debug log
+      print('Update response: $response'); 
       
       if (response.isEmpty) {
         throw Exception('Kategori tidak ditemukan');
@@ -138,14 +126,9 @@ class KategoriService {
     }
   }
 
-  /// =====================
-  /// DELETE KATEGORI
-  /// =====================
   Future<void> hapusKategori(int idKategori) async {
     try {
-      print('Menghapus kategori ID: $idKategori'); // Debug log
-      
-      // 1. Cek apakah kategori ada
+      print('Menghapus kategori ID: $idKategori'); 
       final kategoriResponse = await _supabase
           .from('kategori')
           .select()
@@ -155,29 +138,26 @@ class KategoriService {
         throw Exception('Kategori tidak ditemukan');
       }
 
-      print('Kategori ditemukan: ${kategoriResponse[0]}'); // Debug log
+      print('Kategori ditemukan: ${kategoriResponse[0]}'); 
 
-      // 2. Cek apakah ada alat yang menggunakan kategori ini
       final alatResponse = await _supabase
           .from('alat')
           .select('id_alat')
           .eq('id_kategori', idKategori);
 
-      print('Jumlah alat terkait: ${alatResponse.length}'); // Debug log
+      print('Jumlah alat terkait: ${alatResponse.length}'); 
 
       if (alatResponse.isNotEmpty) {
         throw Exception('Tidak dapat menghapus kategori karena masih ada ${alatResponse.length} alat yang terkait');
       }
 
-      // 3. Hapus kategori
       final deleteResponse = await _supabase
           .from('kategori')
           .delete()
           .eq('id_kategori', idKategori)
           .select();
 
-      print('Delete response: $deleteResponse'); // Debug log
-      
+      print('Delete response: $deleteResponse'); 
       if (deleteResponse.isEmpty) {
         throw Exception('Gagal menghapus kategori');
       }
@@ -187,9 +167,6 @@ class KategoriService {
     }
   }
 
-  /// =====================
-  /// GET KATEGORI BY ID
-  /// =====================
   Future<KategoriModel?> getKategoriById(int idKategori) async {
     try {
       final response = await _supabase

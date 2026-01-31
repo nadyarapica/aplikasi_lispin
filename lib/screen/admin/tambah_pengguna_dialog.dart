@@ -59,7 +59,6 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
 
     try {
       if (_isEditMode) {
-        // UPDATE PENGGUNA
         await _penggunaService.updatePengguna(
           idUser: widget.dataPengguna!['id_user'],
           nama: _namaController.text,
@@ -74,7 +73,6 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
           ),
         );
       } else {
-        // TAMBAH PENGGUNA BARU
         if (_passwordController.text.isEmpty) {
           throw Exception('Password wajib diisi');
         }
@@ -135,7 +133,6 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
 
               const SizedBox(height: 22),
 
-              // NAMA
               TextFormField(
                 controller: _namaController,
                 decoration: InputDecoration(
@@ -159,7 +156,6 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
 
               const SizedBox(height: 14),
 
-              // ROLE (Dropdown)
               DropdownButtonFormField<String>(
                 value: _roleController.text.isEmpty ? null : _roleController.text,
                 decoration: InputDecoration(
@@ -194,7 +190,6 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
 
               const SizedBox(height: 14),
 
-              // EMAIL/USERNAME
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -222,7 +217,6 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
 
               const SizedBox(height: 14),
 
-              // PASSWORD (hanya untuk tambah, optional untuk edit)
               if (!_isEditMode) ...[
                 TextFormField(
                   controller: _passwordController,
@@ -253,7 +247,6 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
 
               const SizedBox(height: 28),
 
-              // BUTTONS
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

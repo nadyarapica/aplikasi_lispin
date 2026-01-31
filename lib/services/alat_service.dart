@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:aplikasi_lispin/models/alat_models.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -6,9 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AlatService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  /// =====================
-  /// GET ALL ALAT
-  /// =====================
   Future<List<AlatModel>> getAlat() async {
     try {
       final response = await _supabase
@@ -28,7 +24,6 @@ class AlatService {
 
       List<AlatModel> alatList = [];
       for (var item in response) {
-        // Buat gambar URL jika ada gambar_alat
         String? gambarUrl;
         if (item['gambar_alat'] != null && item['gambar_alat'].toString().isNotEmpty) {
           gambarUrl = _supabase.storage
@@ -56,9 +51,6 @@ class AlatService {
     }
   }
 
-  /// =====================
-  /// GET KATEGORI DROPDOWN
-  /// =====================
   Future<List<KategoriDropdown>> getKategoriDropdown() async {
     try {
       final response = await _supabase
@@ -83,9 +75,6 @@ class AlatService {
     }
   }
 
-  /// =====================
-  /// TAMBAH ALAT
-  /// =====================
  Future<void> tambahAlat({
   required String namaAlat,
   int? idKategori,
@@ -96,14 +85,11 @@ class AlatService {
   try {
     String? gambarPath;
 
-    // Upload gambar jika ada
     if (imageFile != null) {
       gambarPath = await _uploadImage(imageFile);
     }
 
-    // Insert data alat (TANPA id_alat)
     final response = await _supabase.from('alat').insert({
-      // ✅ JANGAN TAMBAHKAN 'id_alat' di sini!
       'nama_alat': namaAlat,
       'id_kategori': idKategori,
       'kondisi': kondisi,
@@ -122,9 +108,6 @@ class AlatService {
   }
 }
 
-  /// =====================
-  /// UPDATE ALAT
-  /// =====================
   Future<void> updateAlat({
     required int idAlat,
     required String namaAlat,
@@ -137,7 +120,6 @@ class AlatService {
     try {
       String? gambarPath;
 
-      // Ambil data alat lama untuk mendapatkan gambar lama
       final oldData = await _supabase
           .from('alat')
           .select('gambar_alat')
@@ -146,23 +128,18 @@ class AlatService {
 
       final oldGambarPath = oldData['gambar_alat']?.toString();
 
-      // Jika ada gambar baru, upload
       if (imageFile != null) {
-        // Hapus gambar lama jika ada
         if (oldGambarPath != null && oldGambarPath.isNotEmpty) {
           await _deleteImage(oldGambarPath);
         }
         gambarPath = await _uploadImage(imageFile);
       } else if (deleteOldImage && oldGambarPath != null) {
-        // Hapus gambar lama jika diminta
         await _deleteImage(oldGambarPath);
         gambarPath = null;
       } else {
-        // Gunakan gambar lama
         gambarPath = oldGambarPath;
       }
 
-      // Update data alat
       final response = await _supabase
           .from('alat')
           .update({
@@ -186,14 +163,10 @@ class AlatService {
     }
   }
 
-  /// =====================
-  /// HAPUS ALAT
-  /// =====================
   Future<void> hapusAlat(int idAlat) async {
     try {
       print('Menghapus alat ID: $idAlat');
 
-      // 1. Cek apakah alat ada
       final alatResponse = await _supabase
           .from('alat')
           .select('gambar_alat')
@@ -206,7 +179,6 @@ class AlatService {
       final gambarPath = alatResponse[0]['gambar_alat']?.toString();
       print('Alat ditemukan dengan gambar: $gambarPath');
 
-      // 2. Cek apakah ada detail_peminjaman yang menggunakan alat ini
       final detailResponse = await _supabase
           .from('detail_peminjaman')
           .select('id_detail')
@@ -219,12 +191,10 @@ class AlatService {
             'Tidak dapat menghapus alat karena masih ada ${detailResponse.length} peminjaman yang terkait');
       }
 
-      // 3. Hapus gambar jika ada
       if (gambarPath != null && gambarPath.isNotEmpty) {
         await _deleteImage(gambarPath);
       }
 
-      // 4. Hapus alat
       final deleteResponse = await _supabase
           .from('alat')
           .delete()
@@ -242,14 +212,10 @@ class AlatService {
     }
   }
 
-  /// =====================
-  /// UPLOAD IMAGE - FIXED
-  /// =====================
   Future<String> _uploadImage(XFile imageFile) async {
     try {
       final bytes = await imageFile.readAsBytes();
       
-      // Fix: Dapatkan extension dari nama file, bukan dari path
       String fileExt = 'jpg'; // default
       if (imageFile.name.isNotEmpty) {
         final nameParts = imageFile.name.split('.');
@@ -258,9 +224,8 @@ class AlatService {
         }
       }
       
-      // Validasi extension
       if (!['jpg', 'jpeg', 'png', 'gif', 'webp'].contains(fileExt)) {
-        fileExt = 'jpg'; // fallback ke jpg jika tidak valid
+        fileExt = 'jpg'; 
       }
 
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExt';
@@ -285,9 +250,6 @@ class AlatService {
     }
   }
 
-  /// =====================
-  /// DELETE IMAGE
-  /// =====================
   Future<void> _deleteImage(String filePath) async {
     try {
       print('Deleting image: $filePath');
@@ -295,13 +257,10 @@ class AlatService {
       print('Image deleted successfully');
     } catch (e) {
       print('Error delete image: $e');
-      // Don't throw error, just log it
+      
     }
   }
 
-  /// =====================
-  /// SEARCH ALAT
-  /// =====================
   Future<List<AlatModel>> searchAlat(String keyword) async {
     try {
       final response = await _supabase
@@ -346,9 +305,6 @@ class AlatService {
     }
   }
 
-  /// =====================
-  /// GET ALAT BY ID
-  /// =====================
   Future<AlatModel?> getAlatById(int idAlat) async {
     try {
       final response = await _supabase

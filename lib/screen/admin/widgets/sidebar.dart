@@ -1,3 +1,5 @@
+import 'package:aplikasi_lispin/screen/admin/dasboard/admin_dasboard.dart';
+import 'package:aplikasi_lispin/screen/admin/log_aktivitas_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:aplikasi_lispin/screen/admin/pengguna_page.dart';
@@ -17,7 +19,6 @@ class CustomSidebar extends StatelessWidget {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       child: Column(
         children: [
-          // ===== HEADER =====
           Container(
             padding: const EdgeInsets.fromLTRB(24, 60, 24, 32),
             child: const Column(
@@ -49,16 +50,21 @@ class CustomSidebar extends StatelessWidget {
             ),
           ),
 
-          // ===== MENU =====
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ListView(
                 children: [
                   _SidebarItem(
-                    title: 'Dasboard',
+                    title: 'Dashboard',
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AdminDashboard(),
+                        ),
+                      );
                     },
                   ),
 
@@ -81,9 +87,7 @@ class CustomSidebar extends StatelessWidget {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const AlatScreen(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const AlatScreen()),
                       );
                     },
                   ),
@@ -94,9 +98,7 @@ class CustomSidebar extends StatelessWidget {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const DendaPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const DendaPage()),
                       );
                     },
                   ),
@@ -114,26 +116,28 @@ class CustomSidebar extends StatelessWidget {
                     },
                   ),
 
-                  // ✅ RIWAYAT — SUDAH BENAR
                   _SidebarItem(
                     title: 'Riwayat',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const RiwayatPage(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const RiwayatPage()),
                       );
                     },
                   ),
 
                   _SidebarItem(
-                    title: 'Log Aktivitas',
+                    title: 'log aktivitas',
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => LogAktivitasPage()),
+                      );
                     },
                   ),
+
 
                   const SizedBox(height: 40),
 
@@ -189,9 +193,7 @@ class _SidebarItem extends StatelessWidget {
               children: [
                 Icon(
                   icon ?? Icons.chevron_right_rounded,
-                  color: isLogout
-                      ? Colors.red[700]
-                      : const Color(0xFFFF9800),
+                  color: isLogout ? Colors.red[700] : const Color(0xFFFF9800),
                   size: 26,
                 ),
                 const SizedBox(width: 20),
@@ -200,9 +202,7 @@ class _SidebarItem extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w600,
-                    color: isLogout
-                        ? Colors.red[800]
-                        : Colors.black87,
+                    color: isLogout ? Colors.red[800] : Colors.black87,
                   ),
                 ),
               ],

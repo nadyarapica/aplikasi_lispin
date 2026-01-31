@@ -5,9 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class PenggunaService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  /// =====================
-  /// GET ALL USERS
-  /// =====================
   Future<List<PenggunaModel>> getPengguna() async {
     try {
       final response = await _supabase
@@ -26,9 +23,6 @@ class PenggunaService {
     }
   }
 
-  /// =====================
-  /// SEARCH USERS
-  /// =====================
   Future<List<PenggunaModel>> searchPengguna(String keyword) async {
     try {
       final response = await _supabase
@@ -48,9 +42,6 @@ class PenggunaService {
     }
   }
 
-  /// =====================
-  /// TAMBAH USER
-  /// =====================
   Future<void> tambahPengguna({
     required String nama,
     required String username,
@@ -58,7 +49,6 @@ class PenggunaService {
     required String role,
   }) async {
     try {
-      // 1️⃣ BUAT USER AUTH
       final authResponse = await _supabase.auth.signUp(
         email: username,
         password: password,
@@ -70,7 +60,6 @@ class PenggunaService {
 
       final String userId = authResponse.user!.id;
 
-      // 2️⃣ INSERT KE TABLE public.users
       await _supabase.from('users').insert({
         'id_user': userId,
         'nama': nama,
@@ -84,9 +73,6 @@ class PenggunaService {
     }
   }
 
-  /// =====================
-  /// UPDATE USER
-  /// =====================
   Future<void> updatePengguna({
     required String idUser,
     required String nama,
@@ -105,9 +91,6 @@ class PenggunaService {
     }
   }
 
-  /// =====================
-  /// DELETE USER
-  /// =====================
   Future<void> hapusPengguna(String idUser) async {
     try {
       await _supabase.from('users').delete().eq('id_user', idUser);

@@ -14,7 +14,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
 
-    // Delay 5 detik lalu pindah ke Login
     Timer(const Duration(seconds: 5), () {
       Navigator.pushReplacement(
         context,

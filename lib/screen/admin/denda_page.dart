@@ -34,7 +34,6 @@ class DendaPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// SEARCH + ADD
             Row(
               children: [
                 Expanded(
