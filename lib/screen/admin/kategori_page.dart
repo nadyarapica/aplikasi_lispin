@@ -144,7 +144,7 @@ class _KategoriScreenState extends State<KategoriScreen> {
           ),
         ],
       ),
-      drawer: const CustomSidebar(),
+        drawer: CustomSidebar(role: UserRole.admin),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

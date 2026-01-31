@@ -39,7 +39,7 @@ class AdminDashboard extends StatelessWidget {
       ),
 
       // ← Ini bagian penting: hubungkan sidebar ke Scaffold
-      drawer: const CustomSidebar(),
+      drawer: CustomSidebar(role: UserRole.admin),
 
       body: Padding(
         padding: const EdgeInsets.all(16.0),

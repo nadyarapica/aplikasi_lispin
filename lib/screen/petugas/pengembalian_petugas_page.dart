@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'card_peminjaman_petugas.dart';
+import 'card_pengembalian_petugas.dart';
 
-class PeminjamanPetugasPage extends StatelessWidget {
-  const PeminjamanPetugasPage({Key? key}) : super(key: key);
+class PengembalianPetugasPage extends StatelessWidget {
+  const PengembalianPetugasPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class PeminjamanPetugasPage extends StatelessWidget {
           ),
         ),
         title: const Text(
-          'peminjaman',
+          'pengembalian alat',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -31,12 +31,12 @@ class PeminjamanPetugasPage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Search bar
+          /// SEARCH
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.black, width: 1),
+                border: Border.all(color: Colors.black),
                 borderRadius: BorderRadius.circular(25),
               ),
               child: TextField(
@@ -46,56 +46,45 @@ class PeminjamanPetugasPage extends StatelessWidget {
                   prefixIcon: const Icon(Icons.search, color: Colors.black),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 15,
-                  ),
+                      horizontal: 20, vertical: 15),
                 ),
               ),
             ),
           ),
-          
-          // Title
+
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              'daftar peminjaman',
+              'daftar pengembalian',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
-          // List of cards
+
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               children: const [
-                PeminjamanCard(
-                  nama: 'Egi dwi saputri',
-                  tanggal: '23/01/2026',
-                  status: 'Pengajuan',
-                  statusColor: Color(0xFFFFEB3B),
+                PengembalianCard(
+                  nama: "Egi Dwi Saputri",
+                  tanggal: "23/01/2026",
+                  status: "kembalikan",
+                  statusColor: Colors.orange,
                 ),
-                SizedBox(height: 8),
-                PeminjamanCard(
-                  nama: 'Melati tiara permata',
-                  tanggal: '23/01/2026',
-                  status: 'Dipinjam',
-                  statusColor: Color(0xFF4CAF50),
-                ),
-                SizedBox(height: 8),
-                PeminjamanCard(
-                  nama: 'chella robiatul',
-                  tanggal: '23/01/2026',
-                  status: 'ditolak',
-                  statusColor: Color(0xFFF44336),
+                SizedBox(height: 10),
+                PengembalianCard(
+                  nama: "Melati Tiara",
+                  tanggal: "23/01/2026",
+                  status: "baik",
+                  statusColor: Colors.green,
                 ),
               ],
             ),
-          ),
+          )
         ],
       ),
     );

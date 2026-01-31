@@ -1,4 +1,11 @@
+import 'package:aplikasi_lispin/screen/admin/alat_page.dart';
 import 'package:aplikasi_lispin/screen/auth/splash_screen.dart';
+import 'package:aplikasi_lispin/screen/peminjam/alat_peminjam_page.dart';
+import 'package:aplikasi_lispin/screen/peminjam/peminjaman_page.dart';
+import 'package:aplikasi_lispin/screen/peminjam/pengembalian_page.dart';
+import 'package:aplikasi_lispin/screen/petugas/laporan_petugas.dart';
+import 'package:aplikasi_lispin/screen/petugas/peminjaman_petugas_page.dart';
+import 'package:aplikasi_lispin/screen/petugas/pengembalian_petugas_page.dart';
 import 'package:aplikasi_lispin/services/supabase_service.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: PengembalianpeminjamPage(),
     );
   }
 }

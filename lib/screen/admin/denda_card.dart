@@ -71,7 +71,7 @@ class DendaCard extends StatelessWidget {
             onPressed: () {
               showDendaDialog(
                 context: context,
-                mode: "delete",
+                mode: "delete", initialName: '', initialNominal: '',
               );
             },
           ),

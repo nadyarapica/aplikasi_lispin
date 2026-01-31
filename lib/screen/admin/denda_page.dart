@@ -10,7 +10,7 @@ class DendaPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: const CustomSidebar(),
+      drawer: CustomSidebar(role: UserRole.admin),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -68,7 +68,7 @@ class DendaPage extends StatelessWidget {
                   onPressed: () {
                     showDendaDialog(
                       context: context,
-                      mode: "add",
+                      mode: "add", initialName: '', initialNominal: '',
                     );
                   },
                 ),

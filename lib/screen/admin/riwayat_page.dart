@@ -29,7 +29,9 @@ class _RiwayatPageState extends State<RiwayatPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: const CustomSidebar(),
+
+      // 🔥 FIX ERROR DI SINI
+      drawer: CustomSidebar(role: UserRole.admin),
 
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -55,7 +57,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // SEARCH (ASLI)
+            // SEARCH
             Container(
               height: 40,
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -74,7 +76,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
 
             const SizedBox(height: 12),
 
-            // FILTER CHIP (ASLI)
+            // FILTER
             Row(
               children: [
                 FilterChipWidget(
@@ -111,7 +113,7 @@ class _RiwayatPageState extends State<RiwayatPage> {
 
             const SizedBox(height: 16),
 
-            // CARD RIWAYAT (ASLI)
+            // CARD RIWAYAT
             Expanded(
               child: ListView(
                 children: filteredData.map((e) {

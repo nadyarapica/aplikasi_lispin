@@ -15,7 +15,7 @@ class PenggunaScreen extends StatefulWidget {
 class _PenggunaScreenState extends State<PenggunaScreen> {
   final PenggunaService _penggunaService = PenggunaService();
   final TextEditingController _searchController = TextEditingController();
-  
+
   List<PenggunaModel> _penggunaList = [];
   List<PenggunaModel> _filteredList = [];
   bool _isLoading = true;
@@ -25,7 +25,6 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
   void initState() {
     super.initState();
     _loadPengguna();
-    
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -52,7 +51,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
 
   void _onSearchChanged() {
     final query = _searchController.text.trim();
-    
+
     if (query.isEmpty) {
       setState(() {
         _filteredList = _penggunaList;
@@ -62,13 +61,13 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     }
 
     setState(() => _isSearching = true);
-    
+
     final filtered = _penggunaList.where((pengguna) {
       return pengguna.nama.toLowerCase().contains(query.toLowerCase()) ||
-             pengguna.username.toLowerCase().contains(query.toLowerCase()) ||
-             pengguna.role.toLowerCase().contains(query.toLowerCase());
+          pengguna.username.toLowerCase().contains(query.toLowerCase()) ||
+          pengguna.role.toLowerCase().contains(query.toLowerCase());
     }).toList();
-    
+
     setState(() => _filteredList = filtered);
   }
 
@@ -137,9 +136,8 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
   Future<void> _deletePengguna(PenggunaModel pengguna) async {
     try {
       await _penggunaService.hapusPengguna(pengguna.idUser);
-      
       await _loadPengguna();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${pengguna.nama} berhasil dihapus'),
@@ -182,11 +180,15 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
+      // 🔥 FIX ERROR DI SINI
+      drawer: CustomSidebar(role: UserRole.admin),
+
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: Builder(
-          builder: (BuildContext context) {
+          builder: (context) {
             return IconButton(
               icon: const Icon(Icons.menu, color: Colors.black, size: 28),
               onPressed: () => Scaffold.of(context).openDrawer(),
@@ -198,7 +200,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
       ),
-      drawer: const CustomSidebar(),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -239,12 +241,12 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            // LOADING / DATA
             Expanded(
               child: _isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.orange),
                       ),
                     )
                   : _filteredList.isEmpty
@@ -253,17 +255,19 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                _isSearching ? Icons.search_off : Icons.people_outline,
+                                _isSearching
+                                    ? Icons.search_off
+                                    : Icons.people_outline,
                                 size: 64,
-                                color: Colors.grey[400],
+                                color: Colors.grey,
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                _isSearching 
+                                _isSearching
                                     ? 'Tidak ada hasil pencarian'
                                     : 'Belum ada pengguna',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
+                                style: const TextStyle(
+                                  color: Colors.grey,
                                   fontSize: 16,
                                 ),
                               ),
@@ -276,8 +280,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
                           child: ListView.builder(
                             itemCount: _filteredList.length,
                             itemBuilder: (context, index) {
-                              final pengguna = _filteredList[index];
-                              return _penggunaCard(pengguna);
+                              return _penggunaCard(_filteredList[index]);
                             },
                           ),
                         ),
@@ -301,14 +304,12 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
       ),
       child: Row(
         children: [
-          // AVATAR
           CircleAvatar(
             radius: 22,
             backgroundColor: _getRoleColor(pengguna.role),
             child: const Icon(Icons.person, color: Colors.white, size: 26),
           ),
           const SizedBox(width: 14),
-          // INFO
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,26 +317,21 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
                 Text(
                   pengguna.nama,
                   style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                      fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   pengguna.username,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style:
+                      const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: _getRoleColor(pengguna.role).withOpacity(0.1),
+                    color:
+                        _getRoleColor(pengguna.role).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -350,15 +346,14 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
               ],
             ),
           ),
-          // EDIT BUTTON
           IconButton(
-            icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
+            icon:
+                const Icon(Icons.edit, size: 18, color: Colors.blue),
             onPressed: () => _showEditPengguna(pengguna),
           ),
-          const SizedBox(width: 10),
-          // DELETE BUTTON
           IconButton(
-            icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+            icon:
+                const Icon(Icons.delete, size: 18, color: Colors.red),
             onPressed: () => _showDeleteConfirmation(pengguna),
           ),
         ],

@@ -188,7 +188,7 @@ class _AlatScreenState extends State<AlatScreen> {
           ),
         ],
       ),
-      drawer: const CustomSidebar(),
+        drawer: CustomSidebar(role: UserRole.admin),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
