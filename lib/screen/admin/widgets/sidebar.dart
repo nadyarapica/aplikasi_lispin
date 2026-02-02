@@ -1,5 +1,6 @@
-import 'package:aplikasi_lispin/screen/peminjam/alat_peminjam_page.dart' show AlatPeminjamScreen;
-import 'package:aplikasi_lispin/screen/peminjam/dasboard_peminjam.dart';
+import 'package:aplikasi_lispin/screen/admin/dasboard/peminjam_dasboard.dart';
+import 'package:aplikasi_lispin/screen/peminjam/alat_peminjam_page.dart'
+    show AlatPeminjamScreen;
 import 'package:aplikasi_lispin/screen/peminjam/peminjaman_page.dart';
 import 'package:aplikasi_lispin/screen/peminjam/pengembalian_page.dart';
 import 'package:aplikasi_lispin/screen/petugas/laporan_petugas.dart';

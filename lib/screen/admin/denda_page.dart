@@ -15,7 +15,9 @@ class DendaPage extends StatefulWidget {
 class _DendaPageState extends State<DendaPage> {
   final DendaService service = DendaService();
   List<DendaModel> dendaList = [];
+  List<DendaModel> filteredDendaList = [];
   bool loading = true;
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -23,12 +25,42 @@ class _DendaPageState extends State<DendaPage> {
     loadData();
   }
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> loadData() async {
     setState(() => loading = true);
-    final data = await service.getDenda();
+    try {
+      final data = await service.getDenda();
+      setState(() {
+        dendaList = data;
+        filteredDendaList = data;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() => loading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  void searchDenda(String query) {
     setState(() {
-      dendaList = data;
-      loading = false;
+      if (query.isEmpty) {
+        filteredDendaList = dendaList;
+      } else {
+        filteredDendaList = dendaList.where((denda) {
+          final hariTerlambat = denda.hariTerlambat.toString();
+          final totalDenda = denda.totalDenda.toString();
+          return hariTerlambat.contains(query) || totalDenda.contains(query);
+        }).toList();
+      }
     });
   }
 
@@ -53,7 +85,7 @@ class _DendaPageState extends State<DendaPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// SEARCH + ADD (UI ASLI)
+            /// SEARCH + ADD
             Row(
               children: [
                 Expanded(
@@ -64,11 +96,21 @@ class _DendaPageState extends State<DendaPage> {
                       border: Border.all(color: Colors.black),
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.search, size: 20, color: Colors.grey),
-                        SizedBox(width: 8),
-                        Text('search', style: TextStyle(color: Colors.grey)),
+                        const Icon(Icons.search, size: 20, color: Colors.grey),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: searchController,
+                            decoration: const InputDecoration(
+                              hintText: 'search',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                            ),
+                            onChanged: searchDenda,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -84,14 +126,36 @@ class _DendaPageState extends State<DendaPage> {
                         mode: "add",
                       );
                       if (res != null) {
-                        await service.tambahDenda(
-                          DendaModel(
-                            id: 0,
-                            nama: res['nama'],
-                            biaya: res['biaya'],
-                          ),
-                        );
-                        await loadData();
+                        try {
+                          final totalDenda = service.hitungTotalDenda(
+                            res['hari_terlambat'],
+                            res['denda_per_hari'],
+                          );
+                          
+                          await service.tambahDenda(
+                            DendaModel(
+                              id: 0,
+                              idPengembalian: res['id_pengembalian'],
+                              hariTerlambat: res['hari_terlambat'],
+                              dendaPerHari: res['denda_per_hari'],
+                              totalDenda: totalDenda,
+                            ),
+                          );
+                          await loadData();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Denda berhasil ditambahkan'),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error: $e')),
+                            );
+                          }
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -115,36 +179,64 @@ class _DendaPageState extends State<DendaPage> {
             const SizedBox(height: 16),
 
             if (loading)
-              const Center(child: CircularProgressIndicator())
+              const Expanded(
+                child: Center(child: CircularProgressIndicator()),
+              )
             else
               Expanded(
-                child: dendaList.isEmpty
+                child: filteredDendaList.isEmpty
                     ? const Center(child: Text("Belum ada denda"))
                     : ListView.separated(
-                        itemCount: dendaList.length,
+                        itemCount: filteredDendaList.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 14),
                         itemBuilder: (context, index) {
-                          final d = dendaList[index];
+                          final d = filteredDendaList[index];
                           return DendaCard(
-                            title: d.nama,
-                            nominal: d.biaya,
+                            title: 'Denda #${d.id}',
+                            subtitle:
+                                '${d.hariTerlambat} hari × Rp${d.dendaPerHari}',
+                            nominal: d.totalDenda,
                             onEdit: () async {
                               final res = await showDendaDialog(
                                 context: context,
                                 mode: "edit",
-                                initialName: d.nama,
-                                initialNominal: d.biaya.toString(),
+                                initialHariTerlambat:
+                                    d.hariTerlambat.toString(),
+                                initialDendaPerHari: d.dendaPerHari.toString(),
+                                initialIdPengembalian: d.idPengembalian,
                               );
                               if (res != null) {
-                                await service.editDenda(
-                                  d.id,
-                                  DendaModel(
-                                    id: d.id,
-                                    nama: res['nama'],
-                                    biaya: res['biaya'],
-                                  ),
-                                );
-                                await loadData();
+                                try {
+                                  final totalDenda = service.hitungTotalDenda(
+                                    res['hari_terlambat'],
+                                    res['denda_per_hari'],
+                                  );
+                                  
+                                  await service.editDenda(
+                                    d.id,
+                                    DendaModel(
+                                      id: d.id,
+                                      idPengembalian: res['id_pengembalian'],
+                                      hariTerlambat: res['hari_terlambat'],
+                                      dendaPerHari: res['denda_per_hari'],
+                                      totalDenda: totalDenda,
+                                    ),
+                                  );
+                                  await loadData();
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Denda berhasil diupdate'),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error: $e')),
+                                    );
+                                  }
+                                }
                               }
                             },
                             onDelete: () async {
@@ -153,8 +245,23 @@ class _DendaPageState extends State<DendaPage> {
                                 mode: "delete",
                               );
                               if (res != null && res['delete'] == true) {
-                                await service.hapusDenda(d.id);
-                                await loadData();
+                                try {
+                                  await service.hapusDenda(d.id);
+                                  await loadData();
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Denda berhasil dihapus'),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Error: $e')),
+                                    );
+                                  }
+                                }
                               }
                             },
                           );

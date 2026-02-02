@@ -1,5 +1,8 @@
 import 'package:aplikasi_lispin/screen/admin/dasboard/admin_dasboard.dart';
+import 'package:aplikasi_lispin/screen/admin/dasboard/peminjam_dasboard.dart';
+import 'package:aplikasi_lispin/screen/petugas/peminjaman_petugas_page.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,29 +19,80 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool isLoading = false;
 
-  void handleLogin() async {
+  // ================================
+  // LOGIC LOGIN (FIXED)
+  // ================================
+  Future<void> handleLogin() async {
     setState(() => isLoading = true);
 
-    final error = await authService.login(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    );
-
-    setState(() => isLoading = false);
-
-    if (error != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error)),
+    try {
+      final error = await authService.login(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
-      return;
-    }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const AdminDashboard()),
-    );
+      if (error != null) {
+        throw Exception(error);
+      }
+
+      final user = Supabase.instance.client.auth.currentUser;
+
+      if (user == null) {
+        throw Exception('User tidak ditemukan');
+      }
+
+      // ambil role dari tabel public.users
+      final data = await Supabase.instance.client
+          .from('users')
+          .select('role')
+          .eq('id_user', user.id)
+          .maybeSingle();
+
+      if (data == null) {
+        throw Exception('Data user tidak ditemukan di tabel users');
+      }
+
+      final String role = data['role'];
+
+      if (!mounted) return;
+
+      // ================================
+      // REDIRECT SESUAI ROLE
+      // ================================
+      if (role == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const AdminDashboard()),
+        );
+      } else if (role == 'petugas') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PeminjamanPetugasPage()),
+        );
+      } else if (role == 'peminjam') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const DasboardPeminjam()),
+        );
+      } else {
+        throw Exception('Role tidak dikenali');
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
   }
 
+  // ================================
+  // UI ASLI (TIDAK DIUBAH)
+  // ================================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +106,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
               Container(
                 width: 280,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFBE55),
                   borderRadius: BorderRadius.circular(24),
@@ -107,9 +162,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text('Login', style: TextStyle(fontSize: 13)),
+                            : const Text(
+                                'Login',
+                                style: TextStyle(fontSize: 13),
+                              ),
                       ),
                     ),
                   ],
