@@ -1,14 +1,17 @@
-import 'package:aplikasi_lispin/screen/admin/tambah_denda_dialog.dart';
 import 'package:flutter/material.dart';
 
 class DendaCard extends StatelessWidget {
   final String title;
   final int nominal;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   const DendaCard({
     super.key,
     required this.title,
     required this.nominal,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
@@ -36,8 +39,8 @@ class DendaCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: orange,
                     borderRadius: BorderRadius.circular(20),
@@ -53,27 +56,13 @@ class DendaCard extends StatelessWidget {
               ],
             ),
           ),
-
           IconButton(
             icon: const Icon(Icons.edit, size: 18),
-            onPressed: () {
-              showDendaDialog(
-                context: context,
-                mode: "edit",
-                initialName: title,
-                initialNominal: nominal.toString(),
-              );
-            },
+            onPressed: onEdit,
           ),
-
           IconButton(
             icon: const Icon(Icons.delete, size: 18),
-            onPressed: () {
-              showDendaDialog(
-                context: context,
-                mode: "delete", initialName: '', initialNominal: '',
-              );
-            },
+            onPressed: onDelete,
           ),
         ],
       ),

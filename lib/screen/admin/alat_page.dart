@@ -14,7 +14,7 @@ class AlatScreen extends StatefulWidget {
 class _AlatScreenState extends State<AlatScreen> {
   final AlatService _alatService = AlatService();
   final TextEditingController _searchController = TextEditingController();
-  
+
   List<AlatModel> _alatList = [];
   List<AlatModel> _filteredList = [];
   List<KategoriDropdown> _kategoriFilterList = [];
@@ -64,7 +64,7 @@ class _AlatScreenState extends State<AlatScreen> {
 
   void _onSearchChanged() {
     final query = _searchController.text.trim();
-    
+
     if (query.isEmpty && _selectedFilterKategori == null) {
       setState(() {
         _filteredList = _alatList;
@@ -74,23 +74,25 @@ class _AlatScreenState extends State<AlatScreen> {
     }
 
     setState(() => _isSearching = true);
-    
+
     List<AlatModel> filtered = _alatList;
-    
+
     if (query.isNotEmpty) {
       filtered = filtered.where((alat) {
         return alat.namaAlat.toLowerCase().contains(query.toLowerCase()) ||
-               (alat.namaKategori ?? '').toLowerCase().contains(query.toLowerCase()) ||
-               alat.kondisi.toLowerCase().contains(query.toLowerCase());
+            (alat.namaKategori ?? '').toLowerCase().contains(
+              query.toLowerCase(),
+            ) ||
+            alat.kondisi.toLowerCase().contains(query.toLowerCase());
       }).toList();
     }
-    
+
     if (_selectedFilterKategori != null) {
       filtered = filtered.where((alat) {
         return alat.idKategori == _selectedFilterKategori!.idKategori;
       }).toList();
     }
-    
+
     setState(() => _filteredList = filtered);
   }
 
@@ -112,38 +114,29 @@ class _AlatScreenState extends State<AlatScreen> {
   void _showTambahAlat() {
     showDialog(
       context: context,
-      builder: (context) => TambahEditAlatDialog(
-        onDataUpdated: _loadAlat,
-      ),
+      builder: (context) => TambahEditAlatDialog(onDataUpdated: _loadAlat),
     );
   }
 
   void _showEditAlat(AlatModel alat) {
     showDialog(
       context: context,
-      builder: (context) => TambahEditAlatDialog(
-        alat: alat,
-        onDataUpdated: _loadAlat,
-      ),
+      builder: (context) =>
+          TambahEditAlatDialog(alat: alat, onDataUpdated: _loadAlat),
     );
   }
 
   void _showDeleteAlat(AlatModel alat) {
     showDialog(
       context: context,
-      builder: (context) => HapusAlatDialog(
-        alat: alat,
-        onDataUpdated: _loadAlat,
-      ),
+      builder: (context) =>
+          HapusAlatDialog(alat: alat, onDataUpdated: _loadAlat),
     );
   }
 
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 
@@ -188,7 +181,7 @@ class _AlatScreenState extends State<AlatScreen> {
           ),
         ],
       ),
-        drawer: CustomSidebar(role: UserRole.admin),
+      drawer: CustomSidebar(role: UserRole.admin),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -255,12 +248,18 @@ class _AlatScreenState extends State<AlatScreen> {
                           items: [
                             const DropdownMenuItem<KategoriDropdown>(
                               value: null,
-                              child: Text('Semua Kategori', style: TextStyle(fontSize: 11)),
+                              child: Text(
+                                'Semua Kategori',
+                                style: TextStyle(fontSize: 11),
+                              ),
                             ),
                             ..._kategoriFilterList.map((kategori) {
                               return DropdownMenuItem<KategoriDropdown>(
                                 value: kategori,
-                                child: Text(kategori.namaKategori, style: const TextStyle(fontSize: 11)),
+                                child: Text(
+                                  kategori.namaKategori,
+                                  style: const TextStyle(fontSize: 11),
+                                ),
                               );
                             }).toList(),
                           ],
@@ -270,13 +269,17 @@ class _AlatScreenState extends State<AlatScreen> {
                         ),
                       ),
                     ),
-                  
+
                   const SizedBox(width: 8),
-                  
+
                   // Clear filter button
-                  if (_selectedFilterKategori != null || _searchController.text.isNotEmpty)
+                  if (_selectedFilterKategori != null ||
+                      _searchController.text.isNotEmpty)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.red),
                         borderRadius: BorderRadius.circular(20),
@@ -285,7 +288,11 @@ class _AlatScreenState extends State<AlatScreen> {
                         onTap: _clearFilter,
                         child: Row(
                           children: [
-                            const Icon(Icons.clear, size: 14, color: Colors.red),
+                            const Icon(
+                              Icons.clear,
+                              size: 14,
+                              color: Colors.red,
+                            ),
                             const SizedBox(width: 4),
                             const Text(
                               'Clear',
@@ -305,53 +312,58 @@ class _AlatScreenState extends State<AlatScreen> {
               child: _isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.orange,
+                        ),
                       ),
                     )
                   : _filteredList.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                _isSearching ? Icons.search_off : Icons.handyman_outlined,
-                                size: 64,
-                                color: Colors.grey[400],
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                _isSearching 
-                                    ? 'Tidak ada hasil pencarian'
-                                    : 'Belum ada alat',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            _isSearching
+                                ? Icons.search_off
+                                : Icons.handyman_outlined,
+                            size: 64,
+                            color: Colors.grey[400],
                           ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: _loadAlat,
-                          color: Colors.orange,
-                          child: GridView.builder(
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          const SizedBox(height: 16),
+                          Text(
+                            _isSearching
+                                ? 'Tidak ada hasil pencarian'
+                                : 'Belum ada alat',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadAlat,
+                      color: Colors.orange,
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               crossAxisSpacing: 14,
                               mainAxisSpacing: 14,
                               childAspectRatio: 0.8,
                             ),
-                            itemCount: _filteredList.length,
-                            itemBuilder: (context, index) {
-                              final alat = _filteredList[index];
-                              return AlatCard(
-                                alat: alat,
-                                onEdit: () => _showEditAlat(alat),
-                                onDelete: () => _showDeleteAlat(alat),
-                              );
-                            },
-                          ),
-                        ),
+                        itemCount: _filteredList.length,
+                        itemBuilder: (context, index) {
+                          final alat = _filteredList[index];
+                          return AlatCard(
+                            alat: alat,
+                            onEdit: () => _showEditAlat(alat),
+                            onDelete: () => _showDeleteAlat(alat),
+                          );
+                        },
+                      ),
+                    ),
             ),
           ],
         ),
@@ -364,11 +376,7 @@ class HapusAlatDialog extends StatefulWidget {
   final AlatModel alat;
   final VoidCallback? onDataUpdated;
 
-  const HapusAlatDialog({
-    super.key,
-    required this.alat,
-    this.onDataUpdated,
-  });
+  const HapusAlatDialog({super.key, required this.alat, this.onDataUpdated});
 
   @override
   State<HapusAlatDialog> createState() => _HapusAlatDialogState();
@@ -383,7 +391,7 @@ class _HapusAlatDialogState extends State<HapusAlatDialog> {
 
     try {
       await _alatService.hapusAlat(widget.alat.idAlat);
-      
+
       if (widget.onDataUpdated != null) {
         widget.onDataUpdated!();
       }
@@ -394,7 +402,7 @@ class _HapusAlatDialogState extends State<HapusAlatDialog> {
           backgroundColor: Colors.green,
         ),
       );
-      
+
       Navigator.pop(context);
     } catch (e) {
       print('Error delete alat: $e');
@@ -413,9 +421,7 @@ class _HapusAlatDialogState extends State<HapusAlatDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -426,61 +432,47 @@ class _HapusAlatDialogState extends State<HapusAlatDialog> {
               size: 48,
               color: Colors.orange,
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             const Text(
               'Hapus Alat',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             Text(
               '"${widget.alat.namaAlat}"',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            
+
             const SizedBox(height: 8),
-            
+
             if (widget.alat.namaKategori != null)
               Text(
                 'Kategori: ${widget.alat.namaKategori}',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
-            
+
             const SizedBox(height: 8),
-            
+
             Text(
               'Stok: ${widget.alat.stok} | Kondisi: ${widget.alat.kondisi}',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             const Text(
               'Apakah kamu yakin ingin menghapus alat ini?',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-              ),
+              style: TextStyle(fontSize: 14),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             Row(
               children: [
                 Expanded(
@@ -498,9 +490,9 @@ class _HapusAlatDialogState extends State<HapusAlatDialog> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(width: 12),
-                
+
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _deleteAlat,
@@ -516,7 +508,9 @@ class _HapusAlatDialogState extends State<HapusAlatDialog> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : const Text(
@@ -565,7 +559,7 @@ class AlatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(alat.kondisi);
-    
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -618,11 +612,7 @@ class AlatCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           // IMAGE atau ICON
-          Expanded(
-            child: Center(
-              child: _buildImagePreview(),
-            ),
-          ),
+          Expanded(child: Center(child: _buildImagePreview())),
 
           const SizedBox(height: 8),
 
@@ -645,10 +635,7 @@ class AlatCard extends StatelessWidget {
                       ),
                     Text(
                       'Stok: ${alat.stok}',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey,
-                      ),
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -662,7 +649,11 @@ class AlatCard extends StatelessWidget {
                   const SizedBox(width: 6),
                   GestureDetector(
                     onTap: onDelete,
-                    child: const Icon(Icons.delete, size: 16, color: Colors.red),
+                    child: const Icon(
+                      Icons.delete,
+                      size: 16,
+                      color: Colors.red,
+                    ),
                   ),
                 ],
               ),
@@ -698,11 +689,7 @@ class AlatCard extends StatelessWidget {
         color: Colors.grey[200],
         borderRadius: BorderRadius.circular(10),
       ),
-      child: const Icon(
-        Icons.handyman,
-        size: 40,
-        color: Colors.grey,
-      ),
+      child: const Icon(Icons.handyman, size: 40, color: Colors.grey),
     );
   }
 }
