@@ -1,11 +1,12 @@
 // models/pengguna_models.dart
+
 class PenggunaModel {
   final String idUser;
   final String nama;
   final String username;
   final String role;
 
-  PenggunaModel({
+  const PenggunaModel({
     required this.idUser,
     required this.nama,
     required this.username,
@@ -14,7 +15,7 @@ class PenggunaModel {
 
   factory PenggunaModel.fromMap(Map<String, dynamic> map) {
     return PenggunaModel(
-      idUser: map['id_user'] ?? '',
+      idUser: map['id_user'].toString(),
       nama: map['nama'] ?? '',
       username: map['username'] ?? '',
       role: map['role'] ?? '',

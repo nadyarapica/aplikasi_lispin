@@ -1,23 +1,46 @@
+// screen/admin/denda_card.dart
 import 'package:flutter/material.dart';
 
 class DendaCard extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final int nominal;
+  final Map<String, dynamic> dendaData; // Data dari Supabase
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
   const DendaCard({
     super.key,
-    required this.title,
-    this.subtitle,
-    required this.nominal,
+    required this.dendaData,
     this.onEdit,
     this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Ambil data dari Supabase
+    final int hariTerlambat = dendaData['hari_terlambat'] ?? 0;
+    final int dendaPerHari = dendaData['denda_per_hari'] ?? 0;
+
+    // ✅ ambil langsung dari Supabase
+    final int totalDenda = dendaData['total_denda'] ?? 0;
+
+    // Optional: ambil data tambahan seperti id_pengembalian, tanggal, dll
+    final String? tanggalPengembalian = dendaData['tanggal_pengembalian'];
+    final int? idPengembalian = dendaData['id_pengembalian'];
+
+    // Format title
+    String title = 'Denda #${dendaData['id_denda'] ?? '-'}';
+
+    // Format subtitle
+    String? subtitle;
+    if (idPengembalian != null) {
+      subtitle = 'Pengembalian #$idPengembalian';
+      if (tanggalPengembalian != null) {
+        subtitle += ' • $tanggalPengembalian';
+      }
+    }
+
+    subtitle =
+        (subtitle ?? '') + '\n$hariTerlambat hari × Rp ${_formatAngka(dendaPerHari)}';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -61,22 +84,20 @@ class DendaCard extends StatelessWidget {
                 if (subtitle != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    subtitle!,
+                    subtitle,
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 12,
+                      height: 1.4,
                     ),
                   ),
                 ],
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Text(
-                  'Rp ${nominal.toString().replaceAllMapped(
-                        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                        (Match m) => '${m[1]}.',
-                      )}',
+                  'Rp ${_formatAngka(totalDenda)}',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 16,
                     color: Color(0xFFFF9800),
                   ),
                 ),
@@ -102,6 +123,13 @@ class DendaCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  String _formatAngka(int angka) {
+    return angka.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
     );
   }
 }

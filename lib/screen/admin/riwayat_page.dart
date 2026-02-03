@@ -1,7 +1,9 @@
+import 'package:aplikasi_lispin/models/riwayat_models.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_lispin/screen/admin/filter.dart';
 import 'package:aplikasi_lispin/screen/admin/riwayat_card.dart';
 import 'package:aplikasi_lispin/screen/admin/widgets/sidebar.dart';
+import '../../services/riwayat_service.dart';
 
 class RiwayatPage extends StatefulWidget {
   const RiwayatPage({super.key});
@@ -13,26 +15,32 @@ class RiwayatPage extends StatefulWidget {
 class _RiwayatPageState extends State<RiwayatPage> {
   String selectedFilter = 'semua';
 
-  final List<Map<String, String>> riwayatData = [
-    {'name': 'Rotul', 'status': 'peminjam'},
-    {'name': 'Nico', 'status': 'peminjam'},
-    {'name': 'Melati', 'status': 'pengembalian'},
-  ];
+  final service = RiwayatService();
+
+  List<RiwayatModel> data = [];
+
+  Future<void> loadData() async {
+    final result = await service.fetchRiwayat();
+    setState(() {
+      data = result;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
 
   @override
   Widget build(BuildContext context) {
     final filteredData = selectedFilter == 'semua'
-        ? riwayatData
-        : riwayatData
-            .where((e) => e['status'] == selectedFilter)
-            .toList();
+        ? data
+        : data.where((e) => e.status == selectedFilter).toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // 🔥 FIX ERROR DI SINI
       drawer: CustomSidebar(role: UserRole.admin),
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -51,13 +59,11 @@ class _RiwayatPageState extends State<RiwayatPage> {
           style: TextStyle(color: Colors.black),
         ),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // SEARCH
             Container(
               height: 40,
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -76,7 +82,6 @@ class _RiwayatPageState extends State<RiwayatPage> {
 
             const SizedBox(height: 12),
 
-            // FILTER
             Row(
               children: [
                 FilterChipWidget(
@@ -113,14 +118,12 @@ class _RiwayatPageState extends State<RiwayatPage> {
 
             const SizedBox(height: 16),
 
-            // CARD RIWAYAT
             Expanded(
               child: ListView(
                 children: filteredData.map((e) {
                   return RiwayatCard(
-                    name: e['name']!,
-                    status: e['status']!,
-                    selected: false,
+                    data: e,
+                    onRefresh: loadData,
                   );
                 }).toList(),
               ),

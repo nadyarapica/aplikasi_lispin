@@ -1,5 +1,5 @@
-import 'package:aplikasi_lispin/screen/peminjam/alat_peminjam_page.dart';
 import 'package:aplikasi_lispin/screen/peminjam/card_peminjaman.dart';
+import 'package:aplikasi_lispin/screen/peminjam/peminjaman_manager.dart';
 import 'package:flutter/material.dart';
 
 class PeminjamanPage extends StatelessWidget {
@@ -7,6 +7,9 @@ class PeminjamanPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final items = PeminjamanManager.items;
+
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -22,7 +25,6 @@ class PeminjamanPage extends StatelessWidget {
 
       body: Column(
         children: [
-          /// SEARCH
           Padding(
             padding: const EdgeInsets.all(16),
             child: Container(
@@ -41,27 +43,35 @@ class PeminjamanPage extends StatelessWidget {
             ),
           ),
 
-          /// LIST
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: const [
-                PeminjamanPeminjamCard(
+              children: [
+                ...items.map((item) {
+                  return PeminjamanPeminjamCard(
+                    nama: item.nama,
+                    tanggal: item.tanggal,
+                    status: item.status,
+                  );
+                }),
+
+                // dummy lama kamu (tidak dihapus)
+                const PeminjamanPeminjamCard(
                   nama: 'Egi dwi saputri',
                   tanggal: '20/01/2026',
                   status: 'Menunggu',
                 ),
-                PeminjamanPeminjamCard(
+                const PeminjamanPeminjamCard(
                   nama: 'Egi dwi saputri',
                   tanggal: '20/01/2026',
                   status: 'Dipinjam',
                 ),
-                PeminjamanPeminjamCard(
+                const PeminjamanPeminjamCard(
                   nama: 'Egi dwi saputri',
                   tanggal: '20/01/2026',
                   status: 'Selesai',
                 ),
-                PeminjamanPeminjamCard(
+                const PeminjamanPeminjamCard(
                   nama: 'Egi dwi saputri',
                   tanggal: '20/01/2026',
                   status: 'Ditolak',

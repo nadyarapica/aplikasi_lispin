@@ -1,11 +1,13 @@
+// models/denda_models.dart
+
 class DendaModel {
-  final int id;
-  final int? idPengembalian;
+  final int id;                    // id_denda — auto-increment, null saat insert
+  final int? idPengembalian;       // FK ke pengembalian (nullable di schema)
   final int hariTerlambat;
   final int dendaPerHari;
-  final int totalDenda;
+  final int totalDenda;            // = hariTerlambat * dendaPerHari
 
-  DendaModel({
+  const DendaModel({
     required this.id,
     this.idPengembalian,
     required this.hariTerlambat,
@@ -13,19 +15,20 @@ class DendaModel {
     required this.totalDenda,
   });
 
+  // ─── dari row Supabase ────────────────────────────────────────────
   factory DendaModel.fromJson(Map<String, dynamic> json) {
     return DendaModel(
       id: json['id_denda'] as int,
       idPengembalian: json['id_pengembalian'] as int?,
-      hariTerlambat: json['hari_terlambat'] as int? ?? 0,
-      dendaPerHari: json['denda_per_hari'] as int? ?? 0,
-      totalDenda: json['total_denda'] as int? ?? 0,
+      hariTerlambat: json['hari_terlambat'] as int,
+      dendaPerHari: json['denda_per_hari'] as int,
+      totalDenda: json['total_denda'] as int,
     );
   }
 
-  Map<String, dynamic> toJson() {
+  // ─── untuk INSERT (tanpa id_denda, karena auto-increment) ─────────
+  Map<String, dynamic> toInsertJson() {
     return {
-      'id_denda': id,
       'id_pengembalian': idPengembalian,
       'hari_terlambat': hariTerlambat,
       'denda_per_hari': dendaPerHari,
@@ -33,8 +36,8 @@ class DendaModel {
     };
   }
 
-  // Helper untuk insert (tanpa id)
-  Map<String, dynamic> toInsertJson() {
+  // ─── untuk UPDATE ─────────────────────────────────────────────────
+  Map<String, dynamic> toUpdateJson() {
     return {
       'id_pengembalian': idPengembalian,
       'hari_terlambat': hariTerlambat,

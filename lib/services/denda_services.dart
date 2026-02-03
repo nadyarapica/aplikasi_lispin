@@ -1,35 +1,48 @@
+// services/denda_service.dart
 import 'package:aplikasi_lispin/models/denda_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class DendaService {
   final SupabaseClient _client = Supabase.instance.client;
 
-  // Get all denda with pengembalian info
-  Future<List<DendaModel>> getDenda() async {
+  // ─── Fetch semua pengembalian yang ada di DB ─────────────────────
+  //     Dipakai untuk Dropdown di dialog tambah/edit denda
+  Future<List<Map<String, dynamic>>> getPengembalianList() async {
     try {
       final data = await _client
+          .from('pengembalian')
+          .select('id_pengembalian, id_peminjaman, tanggal_kembali')
+          .order('id_pengembalian', ascending: false);
+      return data;
+    } catch (e) {
+      print('Error get pengembalian list: $e');
+      throw Exception('Gagal mengambil data pengembalian');
+    }
+  }
+
+  // ─── READ (semua denda) ──────────────────────────────────────────
+  Future<List<DendaModel>> getDenda() async {
+    try {
+      final List<Map<String, dynamic>> data = await _client
           .from('denda')
           .select()
           .order('id_denda', ascending: false);
-      
-      return (data as List)
-          .map((e) => DendaModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      return data.map((e) => DendaModel.fromJson(e)).toList();
     } catch (e) {
       print('Error get denda: $e');
       throw Exception('Gagal mengambil data denda');
     }
   }
 
-  // Get denda by ID
+  // ─── READ (by id) ────────────────────────────────────────────────
   Future<DendaModel?> getDendaById(int id) async {
     try {
       final data = await _client
           .from('denda')
           .select()
           .eq('id_denda', id)
-          .single();
-      
+          .maybeSingle();
+      if (data == null) return null;
       return DendaModel.fromJson(data);
     } catch (e) {
       print('Error get denda by id: $e');
@@ -37,24 +50,7 @@ class DendaService {
     }
   }
 
-  // Get denda by id_pengembalian
-  Future<DendaModel?> getDendaByPengembalian(int idPengembalian) async {
-    try {
-      final data = await _client
-          .from('denda')
-          .select()
-          .eq('id_pengembalian', idPengembalian)
-          .maybeSingle();
-      
-      if (data == null) return null;
-      return DendaModel.fromJson(data);
-    } catch (e) {
-      print('Error get denda by pengembalian: $e');
-      return null;
-    }
-  }
-
-  // Tambah denda
+  // ─── CREATE ──────────────────────────────────────────────────────
   Future<void> tambahDenda(DendaModel denda) async {
     try {
       await _client.from('denda').insert(denda.toInsertJson());
@@ -64,22 +60,20 @@ class DendaService {
     }
   }
 
-  // Edit denda
+  // ─── UPDATE ──────────────────────────────────────────────────────
   Future<void> editDenda(int id, DendaModel denda) async {
     try {
-      await _client.from('denda').update({
-        'id_pengembalian': denda.idPengembalian,
-        'hari_terlambat': denda.hariTerlambat,
-        'denda_per_hari': denda.dendaPerHari,
-        'total_denda': denda.totalDenda,
-      }).eq('id_denda', id);
+      await _client
+          .from('denda')
+          .update(denda.toUpdateJson())
+          .eq('id_denda', id);
     } catch (e) {
       print('Error edit denda: $e');
-      throw Exception('Gagal mengupdate denda');
+      throw Exception('Gagal mengupdate denda: ${e.toString()}');
     }
   }
 
-  // Hapus denda
+  // ─── DELETE ───────────────────────────────────────────────────────
   Future<void> hapusDenda(int id) async {
     try {
       await _client.from('denda').delete().eq('id_denda', id);
@@ -89,7 +83,7 @@ class DendaService {
     }
   }
 
-  // Hitung total denda
+  // ─── HELPER ──────────────────────────────────────────────────────
   int hitungTotalDenda(int hariTerlambat, int dendaPerHari) {
     return hariTerlambat * dendaPerHari;
   }

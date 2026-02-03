@@ -19,7 +19,6 @@ class TambahPenggunaDialog extends StatefulWidget {
 class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
   final _formKey = GlobalKey<FormState>();
   final _namaController = TextEditingController();
-  final _roleController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _penggunaService = PenggunaService();
@@ -27,10 +26,18 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
   bool _isLoading = false;
   bool _isEditMode = false;
 
-  final List<String> _roles = ['Admin', 'Petugas', 'Peminjam'];
+  // ─── FIX UTAMA ────────────────────────────────────────────────────
+  // Nilai dropdown HARUS lowercase agar:
+  //   1. Cocok dengan CHECK constraint di DB:
+  //        role = ANY (ARRAY['admin','petugas','peminjam'])
+  //   2. Saat edit, value dari DB (lowercase) langsung ditemukan di items
+  //        → tidak ada assertion "0 or 2+ items with the same value"
+  static const List<String> _roles = ['admin', 'petugas', 'peminjam'];
 
-  final RegExp _emailRegex =
-      RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+  // Simpan pilihan role di state (bukan TextEditingController)
+  String? _selectedRole;
+
+  final RegExp _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
   @override
   void initState() {
@@ -38,21 +45,25 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
     _isEditMode = widget.dataPengguna != null;
 
     if (_isEditMode) {
-      _namaController.text = widget.dataPengguna!['nama'];
-      _roleController.text = widget.dataPengguna!['role'];
-      _emailController.text = widget.dataPengguna!['username'];
+      _namaController.text = widget.dataPengguna!['nama'] ?? '';
+      _emailController.text = widget.dataPengguna!['username'] ?? '';
+
+      // role dari DB sudah lowercase → langsung assign
+      // toLowerCase() sebagai safety net kalau ada data lama yang title-case
+      final roleFromDb = (widget.dataPengguna!['role'] as String?)?.toLowerCase();
+      _selectedRole = _roles.contains(roleFromDb) ? roleFromDb : null;
     }
   }
 
   @override
   void dispose() {
     _namaController.dispose();
-    _roleController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
+  // ─── SIMPAN ───────────────────────────────────────────────────────
   Future<void> _savePengguna() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -64,42 +75,49 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
           idUser: widget.dataPengguna!['id_user'],
           nama: _namaController.text.trim(),
           username: _emailController.text.trim(),
-          role: _roleController.text,
+          role: _selectedRole!, // sudah lowercase
         );
       } else {
         await _penggunaService.tambahPengguna(
           nama: _namaController.text.trim(),
           username: _emailController.text.trim(),
           password: _passwordController.text,
-          role: _roleController.text,
+          role: _selectedRole!, // sudah lowercase
         );
       }
 
+      // Callback sebelum pop agar list di-refresh
       widget.onDataUpdated?.call();
-      Navigator.pop(context);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            _isEditMode
-                ? 'Pengguna berhasil diupdate'
-                : 'Pengguna berhasil ditambahkan',
+      if (mounted) {
+        Navigator.pop(context);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _isEditMode
+                  ? 'Pengguna berhasil diupdate'
+                  : 'Pengguna berhasil ditambahkan',
+            ),
+            backgroundColor: Colors.green,
           ),
-          backgroundColor: Colors.green,
-        ),
-      );
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
+  // ─── BUILD ────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -107,8 +125,8 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(26),
       ),
-      child: SingleChildScrollView( 
-        child: ConstrainedBox(   
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.8,
           ),
@@ -120,6 +138,7 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // ── Judul ──
                   Text(
                     _isEditMode ? 'Edit Pengguna' : 'Tambah Pengguna',
                     style: const TextStyle(
@@ -129,20 +148,10 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
                   ),
                   const SizedBox(height: 22),
 
-                  /// NAMA
+                  // ── Nama ──
                   TextFormField(
                     controller: _namaController,
-                    decoration: InputDecoration(
-                      labelText: 'Nama',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(22),
-                        borderSide: const BorderSide(color: Colors.orange),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(22),
-                        borderSide: const BorderSide(color: Colors.orange, width: 2),
-                      ),
-                    ),
+                    decoration: _inputDecoration('Nama'),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return 'Nama wajib diisi';
@@ -155,31 +164,22 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
                   ),
                   const SizedBox(height: 14),
 
-                  /// ROLE
+                  // ── Role (Dropdown) ──────────────────────────────────
+                  // FIX: value = _selectedRole (String? dari state)
+                  //      items  = _roles (list of lowercase strings)
+                  //      Keduanya pakai tipe yang sama → tidak akan assertion.
                   DropdownButtonFormField<String>(
-                    value:
-                        _roleController.text.isEmpty ? null : _roleController.text,
-                    decoration: InputDecoration(
-                      labelText: 'Role',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(22),
-                        borderSide: const BorderSide(color: Colors.orange),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(22),
-                        borderSide: const BorderSide(color: Colors.orange, width: 2),
-                      ),
-                    ),
+                    value: _selectedRole,
+                    decoration: _inputDecoration('Role'),
                     items: _roles.map((role) {
-                      return DropdownMenuItem(
+                      return DropdownMenuItem<String>(
                         value: role,
-                        child: Text(role),
+                        // Tampilkan huruf pertama kapital di UI
+                        child: Text(role[0].toUpperCase() + role.substring(1)),
                       );
                     }).toList(),
                     onChanged: (value) {
-                      setState(() {
-                        _roleController.text = value ?? '';
-                      });
+                      setState(() => _selectedRole = value);
                     },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -190,20 +190,11 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
                   ),
                   const SizedBox(height: 14),
 
+                  // ── Email / Username ──
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(
-                      labelText: 'Email/Username',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(22),
-                        borderSide: const BorderSide(color: Colors.orange),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(22),
-                        borderSide: const BorderSide(color: Colors.orange, width: 2),
-                      ),
-                    ),
+                    decoration: _inputDecoration('Email / Username'),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Email wajib diisi';
@@ -216,28 +207,18 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
                   ),
                   const SizedBox(height: 14),
 
-                  /// PASSWORD (HANYA TAMBAH)
+                  // ── Password (hanya saat TAMBAH) ──
                   if (!_isEditMode) ...[
                     TextFormField(
                       controller: _passwordController,
                       obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(22),
-                          borderSide: const BorderSide(color: Colors.orange),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(22),
-                          borderSide: const BorderSide(color: Colors.orange, width: 2),
-                        ),
-                      ),
+                      decoration: _inputDecoration('Password'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Password wajib diisi';
                         }
                         if (value.length < 6) {
-                          return 'Password minimal 6 angka';
+                          return 'Password minimal 6 karakter';
                         }
                         return null;
                       },
@@ -247,12 +228,13 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
 
                   const SizedBox(height: 28),
 
-                  /// BUTTON
+                  // ── Tombol Batal & Simpan ──
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       OutlinedButton(
-                        onPressed: _isLoading ? null : () => Navigator.pop(context),
+                        onPressed:
+                            _isLoading ? null : () => Navigator.pop(context),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(110, 40),
                           side: const BorderSide(color: Colors.orange),
@@ -291,12 +273,39 @@ class _TambahPenggunaDialogState extends State<TambahPenggunaDialog> {
                               ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // ─── Helper: dekorasi input yang seragam ─────────────────────────
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(22),
+        borderSide: const BorderSide(color: Colors.orange),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(22),
+        borderSide: const BorderSide(color: Colors.orange),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(22),
+        borderSide: const BorderSide(color: Colors.orange, width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(22),
+        borderSide: const BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(22),
+        borderSide: const BorderSide(color: Colors.red, width: 2),
       ),
     );
   }

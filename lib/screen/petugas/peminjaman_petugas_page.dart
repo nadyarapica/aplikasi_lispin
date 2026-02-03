@@ -1,11 +1,33 @@
 import 'package:flutter/material.dart';
 import 'card_peminjaman_petugas.dart';
+import 'package:aplikasi_lispin/screen/peminjam/peminjaman_manager.dart';
 
-class PeminjamanPetugasPage extends StatelessWidget {
+class PeminjamanPetugasPage extends StatefulWidget {
   const PeminjamanPetugasPage({Key? key}) : super(key: key);
 
   @override
+  State<PeminjamanPetugasPage> createState() =>
+      _PeminjamanPetugasPageState();
+}
+
+class _PeminjamanPetugasPageState extends State<PeminjamanPetugasPage> {
+
+  Color _statusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'dipinjam':
+        return const Color(0xFF4CAF50);
+      case 'ditolak':
+        return const Color(0xFFF44336);
+      default:
+        return const Color(0xFFFFEB3B); // pengajuan
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    final items = PeminjamanManager.items;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -31,7 +53,7 @@ class PeminjamanPetugasPage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Search bar
+
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
@@ -53,8 +75,7 @@ class PeminjamanPetugasPage extends StatelessWidget {
               ),
             ),
           ),
-          
-          // Title
+
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
@@ -65,35 +86,29 @@ class PeminjamanPetugasPage extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 12),
-          
-          // List of cards
+
           Expanded(
-            child: ListView(
+            child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              children: const [
-                PeminjamanCard(
-                  nama: 'Egi dwi saputri',
-                  tanggal: '23/01/2026',
-                  status: 'Pengajuan',
-                  statusColor: Color(0xFFFFEB3B),
-                ),
-                SizedBox(height: 8),
-                PeminjamanCard(
-                  nama: 'Melati tiara permata',
-                  tanggal: '23/01/2026',
-                  status: 'Dipinjam',
-                  statusColor: Color(0xFF4CAF50),
-                ),
-                SizedBox(height: 8),
-                PeminjamanCard(
-                  nama: 'chella robiatul',
-                  tanggal: '23/01/2026',
-                  status: 'ditolak',
-                  statusColor: Color(0xFFF44336),
-                ),
-              ],
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+
+                final e = items[index];
+
+                return Column(
+                  children: [
+                    PeminjamanCard(
+                      nama: e.nama,
+                      tanggal: e.tanggal,
+                      status: e.status,
+                      statusColor: _statusColor(e.status),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                );
+              },
             ),
           ),
         ],

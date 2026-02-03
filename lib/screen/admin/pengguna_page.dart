@@ -34,21 +34,27 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     super.dispose();
   }
 
+  // ─── LOAD ─────────────────────────────────────────────────────────
   Future<void> _loadPengguna() async {
     setState(() => _isLoading = true);
     try {
       final data = await _penggunaService.getPengguna();
-      setState(() {
-        _penggunaList = data;
-        _filteredList = data;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _penggunaList = data;
+          _filteredList = data;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
-      _showErrorSnackbar('Gagal memuat data pengguna');
+      if (mounted) {
+        setState(() => _isLoading = false);
+        _showErrorSnackbar('Gagal memuat data pengguna');
+      }
     }
   }
 
+  // ─── SEARCH (client-side filter) ──────────────────────────────────
   void _onSearchChanged() {
     final query = _searchController.text.trim();
 
@@ -63,14 +69,16 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     setState(() => _isSearching = true);
 
     final filtered = _penggunaList.where((pengguna) {
-      return pengguna.nama.toLowerCase().contains(query.toLowerCase()) ||
-          pengguna.username.toLowerCase().contains(query.toLowerCase()) ||
-          pengguna.role.toLowerCase().contains(query.toLowerCase());
+      final q = query.toLowerCase();
+      return pengguna.nama.toLowerCase().contains(q) ||
+          pengguna.username.toLowerCase().contains(q) ||
+          pengguna.role.toLowerCase().contains(q);
     }).toList();
 
     setState(() => _filteredList = filtered);
   }
 
+  // ─── DIALOG: TAMBAH ───────────────────────────────────────────────
   void _showTambahPengguna() {
     showDialog(
       context: context,
@@ -80,15 +88,15 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     );
   }
 
+  // ─── DIALOG: EDIT ─────────────────────────────────────────────────
   void _showEditPengguna(PenggunaModel pengguna) {
-    // ✅ FIX: gunakan context asli dari State, jangan ubah
     showDialog(
       context: context,
       builder: (context) => TambahPenggunaDialog(
         dataPengguna: {
           'id_user': pengguna.idUser,
           'nama': pengguna.nama,
-          'role': pengguna.role,
+          'role': pengguna.role,        // sudah lowercase dari DB
           'username': pengguna.username,
         },
         onDataUpdated: _loadPengguna,
@@ -96,6 +104,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     );
   }
 
+  // ─── DIALOG: KONFIRMASI HAPUS ─────────────────────────────────────
   void _showDeleteConfirmation(PenggunaModel pengguna) {
     showDialog(
       context: context,
@@ -134,27 +143,33 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     );
   }
 
+  // ─── AKSI: HAPUS ──────────────────────────────────────────────────
   Future<void> _deletePengguna(PenggunaModel pengguna) async {
     try {
       await _penggunaService.hapusPengguna(pengguna.idUser);
       await _loadPengguna();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${pengguna.nama} berhasil dihapus'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${pengguna.nama} berhasil dihapus'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Gagal menghapus: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal menghapus: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
+  // ─── HELPER ───────────────────────────────────────────────────────
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -177,6 +192,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     }
   }
 
+  // ─── BUILD ────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -202,6 +218,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // ── Search bar + tombol tambah ──
             Row(
               children: [
                 Expanded(
@@ -238,12 +255,13 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
               ],
             ),
             const SizedBox(height: 20),
+
+            // ── List / Loading / Empty ──
             Expanded(
               child: _isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.orange),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
                       ),
                     )
                   : _filteredList.isEmpty
@@ -288,6 +306,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
     );
   }
 
+  // ─── CARD ─────────────────────────────────────────────────────────
   Widget _penggunaCard(PenggunaModel pengguna) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -313,22 +332,20 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
               children: [
                 Text(
                   pengguna.nama,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 14),
+                  style:
+                      const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   pengguna.username,
-                  style:
-                      const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 const SizedBox(height: 4),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color:
-                        _getRoleColor(pengguna.role).withOpacity(0.1),
+                    color: _getRoleColor(pengguna.role).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
