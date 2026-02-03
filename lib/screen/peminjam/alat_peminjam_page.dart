@@ -6,14 +6,14 @@ import 'package:aplikasi_lispin/screen/peminjam/keranjang_page.dart';
 import 'package:aplikasi_lispin/services/alat_service.dart';
 import 'package:flutter/material.dart';
 
-class AlatPeminjamScreen extends StatefulWidget {
-  const AlatPeminjamScreen({super.key});
+class AlatPeminjamPage extends StatefulWidget {
+  const AlatPeminjamPage({super.key});
 
   @override
-  State<AlatPeminjamScreen> createState() => _AlatPeminjamScreenState();
+  State<AlatPeminjamPage> createState() => _AlatPeminjamScreenState();
 }
 
-class _AlatPeminjamScreenState extends State<AlatPeminjamScreen> {
+class _AlatPeminjamScreenState extends State<AlatPeminjamPage> {
   final AlatService _alatService = AlatService();
   List<AlatModel> _alatList = [];
   bool _isLoading = true;
@@ -38,14 +38,14 @@ class _AlatPeminjamScreenState extends State<AlatPeminjamScreen> {
       appBar: AppBar(
         title: const Text('Alat'),
       ),
-        drawer: CustomSidebar(role: UserRole.admin),
+
+      drawer: const CustomSidebar(role: UserRole.peminjam),
 
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : GridView.builder(
               padding: const EdgeInsets.all(16),
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 14,
                 mainAxisSpacing: 14,

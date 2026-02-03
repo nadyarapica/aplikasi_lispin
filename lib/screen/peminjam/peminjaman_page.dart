@@ -2,8 +2,8 @@ import 'package:aplikasi_lispin/screen/peminjam/alat_peminjam_page.dart';
 import 'package:aplikasi_lispin/screen/peminjam/card_peminjaman.dart';
 import 'package:flutter/material.dart';
 
-class PeminjamanPeminjamPage extends StatelessWidget {
-  const PeminjamanPeminjamPage({super.key});
+class PeminjamanPage extends StatelessWidget {
+  const PeminjamanPage({super.key});
 
   @override
   Widget build(BuildContext context) {

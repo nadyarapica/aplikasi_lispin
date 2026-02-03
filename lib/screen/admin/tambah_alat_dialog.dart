@@ -8,11 +8,7 @@ class TambahEditAlatDialog extends StatefulWidget {
   final AlatModel? alat;
   final VoidCallback? onDataUpdated;
 
-  const TambahEditAlatDialog({
-    super.key,
-    this.alat,
-    this.onDataUpdated,
-  });
+  const TambahEditAlatDialog({super.key, this.alat, this.onDataUpdated});
 
   @override
   State<TambahEditAlatDialog> createState() => _TambahEditAlatDialogState();
@@ -24,7 +20,7 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
   final _stokController = TextEditingController(text: '1');
   final _alatService = AlatService();
   final ImagePicker _picker = ImagePicker();
-  
+
   List<KategoriDropdown> _kategoriList = [];
   KategoriDropdown? _selectedKategori;
   String? _selectedKondisi = 'Baik';
@@ -34,15 +30,20 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
   int? _alatId;
 
   // List kondisi
-  final List<String> _kondisiList = ['Baik', 'Buruk', 'Rusak', 'Dalam Perbaikan'];
+  final List<String> _kondisiList = [
+    'Baik',
+    'Buruk',
+    'Rusak',
+    'Dalam Perbaikan',
+  ];
 
   @override
   void initState() {
     super.initState();
     _isEditMode = widget.alat != null;
-    
+
     _loadKategori();
-    
+
     if (_isEditMode) {
       _namaController.text = widget.alat!.namaAlat;
       _stokController.text = widget.alat!.stok.toString();
@@ -61,12 +62,12 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
   Future<void> _loadKategori() async {
     try {
       final kategori = await _alatService.getKategoriDropdown();
-      
+
       if (!mounted) return;
-      
+
       setState(() {
         _kategoriList = kategori;
-        
+
         // Set selected kategori jika edit mode
         if (_isEditMode && widget.alat!.idKategori != null) {
           for (var kategori in _kategoriList) {
@@ -93,7 +94,7 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
         maxHeight: 800,
         imageQuality: 80,
       );
-      
+
       if (image != null && mounted) {
         setState(() {
           _selectedImage = image;
@@ -113,7 +114,7 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
         maxHeight: 800,
         imageQuality: 80,
       );
-      
+
       if (image != null && mounted) {
         setState(() {
           _selectedImage = image;
@@ -127,12 +128,12 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
 
   Future<void> _saveAlat() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     if (_selectedKategori == null) {
       _showErrorSnackbar('Pilih kategori alat');
       return;
     }
-    
+
     if (_selectedKondisi == null) {
       _showErrorSnackbar('Pilih kondisi alat');
       return;
@@ -142,7 +143,7 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
 
     try {
       final stok = int.tryParse(_stokController.text) ?? 1;
-      
+
       if (_isEditMode && _alatId != null) {
         // UPDATE ALAT
         await _alatService.updateAlat(
@@ -154,7 +155,7 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
           imageFile: _selectedImage,
           deleteOldImage: false,
         );
-        
+
         if (!mounted) return;
         _showSuccessSnackbar('Alat berhasil diupdate');
       } else {
@@ -166,7 +167,7 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
           stok: stok,
           imageFile: _selectedImage,
         );
-        
+
         if (!mounted) return;
         _showSuccessSnackbar('Alat berhasil ditambahkan');
       }
@@ -215,10 +216,8 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.symmetric(horizontal: 26),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(26),
-      ),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -255,7 +254,10 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(22),
-                      borderSide: const BorderSide(color: Colors.orange, width: 2),
+                      borderSide: const BorderSide(
+                        color: Colors.orange,
+                        width: 2,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(22),
@@ -294,7 +296,10 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(22),
-                      borderSide: const BorderSide(color: Colors.orange, width: 2),
+                      borderSide: const BorderSide(
+                        color: Colors.orange,
+                        width: 2,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(22),
@@ -311,11 +316,13 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                       child: Text(kategori.namaKategori),
                     );
                   }).toList(),
-                  onChanged: _isLoading ? null : (KategoriDropdown? newValue) {
-                    setState(() {
-                      _selectedKategori = newValue;
-                    });
-                  },
+                  onChanged: _isLoading
+                      ? null
+                      : (KategoriDropdown? newValue) {
+                          setState(() {
+                            _selectedKategori = newValue;
+                          });
+                        },
                   hint: const Text('Pilih kategori'),
                   validator: (value) {
                     if (value == null) {
@@ -345,7 +352,10 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(22),
-                      borderSide: const BorderSide(color: Colors.orange, width: 2),
+                      borderSide: const BorderSide(
+                        color: Colors.orange,
+                        width: 2,
+                      ),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(22),
@@ -403,7 +413,9 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                           ),
                           const SizedBox(height: 8),
                           TextButton(
-                            onPressed: _isLoading ? null : _showImagePickerOptions,
+                            onPressed: _isLoading
+                                ? null
+                                : _showImagePickerOptions,
                             child: const Text(
                               'Pilih Gambar',
                               style: TextStyle(color: Colors.orange),
@@ -431,7 +443,10 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(22),
-                            borderSide: const BorderSide(color: Colors.orange, width: 2),
+                            borderSide: const BorderSide(
+                              color: Colors.orange,
+                              width: 2,
+                            ),
                           ),
                           errorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(22),
@@ -439,7 +454,10 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(22),
-                            borderSide: const BorderSide(color: Colors.red, width: 2),
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                              width: 2,
+                            ),
                           ),
                         ),
                         items: _kondisiList.map((String kondisi) {
@@ -448,11 +466,13 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                             child: Text(kondisi),
                           );
                         }).toList(),
-                        onChanged: _isLoading ? null : (String? newValue) {
-                          setState(() {
-                            _selectedKondisi = newValue;
-                          });
-                        },
+                        onChanged: _isLoading
+                            ? null
+                            : (String? newValue) {
+                                setState(() {
+                                  _selectedKondisi = newValue;
+                                });
+                              },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Pilih kondisi';
@@ -471,7 +491,9 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     OutlinedButton(
-                      onPressed: _isLoading ? null : () => Navigator.pop(context),
+                      onPressed: _isLoading
+                          ? null
+                          : () => Navigator.pop(context),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(110, 40),
                         side: const BorderSide(color: Colors.orange),
@@ -500,7 +522,9 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
                               height: 20,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
                               ),
                             )
                           : Text(
@@ -530,7 +554,7 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
               ),
             );
           }
-          
+
           if (snapshot.hasData) {
             return ClipRRect(
               borderRadius: BorderRadius.circular(18),
@@ -542,17 +566,9 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
               ),
             );
           } else if (snapshot.hasError) {
-            return const Icon(
-              Icons.image,
-              size: 40,
-              color: Colors.orange,
-            );
+            return const Icon(Icons.image, size: 40, color: Colors.orange);
           } else {
-            return const Icon(
-              Icons.image,
-              size: 40,
-              color: Colors.orange,
-            );
+            return const Icon(Icons.image, size: 40, color: Colors.orange);
           }
         },
       );
@@ -569,33 +585,26 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
             return Center(
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                    ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
                     : null,
                 valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
               ),
             );
           },
           errorBuilder: (context, error, stackTrace) {
-            return const Icon(
-              Icons.image,
-              size: 40,
-              color: Colors.orange,
-            );
+            return const Icon(Icons.image, size: 40, color: Colors.orange);
           },
         ),
       );
     } else {
-      return const Icon(
-        Icons.image,
-        size: 40,
-        color: Colors.orange,
-      );
+      return const Icon(Icons.image, size: 40, color: Colors.orange);
     }
   }
 
   void _showImagePickerOptions() {
     if (_isLoading) return;
-    
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -622,7 +631,10 @@ class _TambahEditAlatDialogState extends State<TambahEditAlatDialog> {
               if (_selectedImage != null || widget.alat?.gambarUrl != null)
                 ListTile(
                   leading: const Icon(Icons.delete, color: Colors.red),
-                  title: const Text('Hapus Gambar', style: TextStyle(color: Colors.red)),
+                  title: const Text(
+                    'Hapus Gambar',
+                    style: TextStyle(color: Colors.red),
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     setState(() {

@@ -81,6 +81,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
   }
 
   void _showEditPengguna(PenggunaModel pengguna) {
+    // ✅ FIX: gunakan context asli dari State, jangan ubah
     showDialog(
       context: context,
       builder: (context) => TambahPenggunaDialog(
@@ -180,10 +181,7 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // 🔥 FIX ERROR DI SINI
       drawer: CustomSidebar(role: UserRole.admin),
-
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -200,7 +198,6 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -347,13 +344,11 @@ class _PenggunaScreenState extends State<PenggunaScreen> {
             ),
           ),
           IconButton(
-            icon:
-                const Icon(Icons.edit, size: 18, color: Colors.blue),
+            icon: const Icon(Icons.edit, size: 18, color: Colors.blue),
             onPressed: () => _showEditPengguna(pengguna),
           ),
           IconButton(
-            icon:
-                const Icon(Icons.delete, size: 18, color: Colors.red),
+            icon: const Icon(Icons.delete, size: 18, color: Colors.red),
             onPressed: () => _showDeleteConfirmation(pengguna),
           ),
         ],

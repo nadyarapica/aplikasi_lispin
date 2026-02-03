@@ -1,6 +1,6 @@
 import 'package:aplikasi_lispin/screen/admin/dasboard/peminjam_dasboard.dart';
 import 'package:aplikasi_lispin/screen/peminjam/alat_peminjam_page.dart'
-    show AlatPeminjamScreen;
+    show AlatPeminjamPage;
 import 'package:aplikasi_lispin/screen/peminjam/peminjaman_page.dart';
 import 'package:aplikasi_lispin/screen/peminjam/pengembalian_page.dart';
 import 'package:aplikasi_lispin/screen/petugas/laporan_petugas.dart';
@@ -67,7 +67,6 @@ class CustomSidebar extends StatelessWidget {
             ),
           ),
 
-          /// ===== MENU =====
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -97,7 +96,6 @@ class CustomSidebar extends StatelessWidget {
     );
   }
 
-  /// ===== MENU BERDASARKAN ROLE =====
   List<Widget> _buildMenuByRole(BuildContext context) {
     switch (role) {
       case UserRole.admin:
@@ -113,7 +111,6 @@ class CustomSidebar extends StatelessWidget {
 
       case UserRole.petugas:
         return [
-          // _item(context, 'Dashboard Petugas', const DashboardPetugasPage()),
           _item(context, 'Peminjaman', const PeminjamanPetugasPage()),
           _item(context, 'Pengembalian', const PengembalianPetugasPage()),
           _item(context, 'Laporan', const LaporanPage()),
@@ -122,8 +119,8 @@ class CustomSidebar extends StatelessWidget {
       case UserRole.peminjam:
         return [
           _item(context, 'Dashboard', const DasboardPeminjam()),
-          _item(context, 'Alat', const AlatPeminjamScreen()),
-          _item(context, 'Peminjaman', const PeminjamanPeminjamPage()), // ✅ FIX
+          _item(context, 'Alat', const AlatPeminjamPage()),
+          _item(context, 'Peminjaman', const PeminjamanPage()), // ✅ FIX
           _item(context, 'Pengembalian', const PengembalianpeminjamPage()),
         ];
     }
@@ -143,7 +140,6 @@ class CustomSidebar extends StatelessWidget {
   }
 }
 
-/// ===== ITEM =====
 class _SidebarItem extends StatelessWidget {
   final String title;
   final IconData? icon;
