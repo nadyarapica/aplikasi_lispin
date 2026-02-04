@@ -3,8 +3,8 @@ import 'package:aplikasi_lispin/screen/admin/widgets/activity_card.dart';
 import 'package:aplikasi_lispin/screen/admin/widgets/stat_card.dart';
 import 'package:aplikasi_lispin/screen/admin/widgets/sidebar.dart';
 
-class AdminDashboard extends StatelessWidget {
-  const AdminDashboard({super.key});
+class PetugasDashboard extends StatelessWidget {
+  const PetugasDashboard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,7 @@ class AdminDashboard extends StatelessWidget {
 
       // ✅ SIDEBAR ADMIN
       drawer: const CustomSidebar(
-        role: UserRole.admin,
+        role: UserRole.petugas,
       ),
 
       body: Padding(

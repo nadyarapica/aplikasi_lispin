@@ -1,5 +1,6 @@
 import 'package:aplikasi_lispin/screen/admin/dasboard/admin_dasboard.dart';
 import 'package:aplikasi_lispin/screen/admin/dasboard/peminjam_dasboard.dart';
+import 'package:aplikasi_lispin/screen/admin/dasboard/petugas_dasboard.dart';
 import 'package:aplikasi_lispin/screen/petugas/peminjaman_petugas_page.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -98,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
       } else if (role == 'petugas') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const PeminjamanPetugasPage()),
+          MaterialPageRoute(builder: (_) => const PetugasDashboard()),
         );
       } else if (role == 'peminjam') {
         Navigator.pushReplacement(

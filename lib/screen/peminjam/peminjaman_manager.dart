@@ -1,25 +1,30 @@
-class PeminjamanData {
-  final String nama;
-  final String tanggal;
-  String status;
+import 'package:aplikasi_lispin/models/peminjaman_models.dart';
 
-  PeminjamanData({
-    required this.nama,
-    required this.tanggal,
-    required this.status,
-  });
-}
 
 class PeminjamanManager {
-  static final List<PeminjamanData> _items = [];
+  static final List<PeminjamanModel> items = [];
 
-  static List<PeminjamanData> get items => _items;
-
-  static void add(PeminjamanData data) {
-    _items.add(data);
+  static void tambah(PeminjamanModel data) {
+    items.add(data);
   }
 
-  static void updateStatus(int index, String status) {
-    _items[index].status = status;
+  static void hapus(PeminjamanModel data) {
+    items.remove(data);
+  }
+
+  static void updateStatus(PeminjamanModel data, String status, {String? keterangan}) {
+    data.status = status;
+    if (keterangan != null) {
+      data.keterangan = keterangan;
+    }
+  }
+
+  // ✅ Tambahkan ini
+  static void approve(PeminjamanModel data) {
+    updateStatus(data, 'dipinjam');
+  }
+
+  static void reject(PeminjamanModel data, {String? keterangan}) {
+    updateStatus(data, 'ditolak', keterangan: keterangan);
   }
 }

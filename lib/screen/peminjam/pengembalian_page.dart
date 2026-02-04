@@ -1,5 +1,6 @@
 import 'package:aplikasi_lispin/screen/peminjam/card_pengembalian.dart';
 import 'package:flutter/material.dart';
+import '../admin/widgets/sidebar.dart'; // pastikan path sesuai
 
 class PengembalianpeminjamPage extends StatelessWidget {
   const PengembalianpeminjamPage({super.key});
@@ -8,13 +9,21 @@ class PengembalianpeminjamPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      drawer: const CustomSidebar(role: UserRole.peminjam), // tambahkan drawer
 
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: const Icon(Icons.menu, color: Colors.black),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu, color: Colors.black),
+            onPressed: () {
+              Scaffold.of(context).openDrawer(); // buka sidebar
+            },
+          ),
+        ),
         title: const Text(
-          'pengembalian alat',
+          'Pengembalian Alat',
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -49,7 +58,7 @@ class PengembalianpeminjamPage extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'daftar pengembalian',
+              'Daftar Pengembalian',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -60,27 +69,26 @@ class PengembalianpeminjamPage extends StatelessWidget {
           const SizedBox(height: 12),
 
           /// LIST
-         Expanded(
-  child: ListView(
-    padding: const EdgeInsets.symmetric(horizontal: 16),
-    children: const [
-      PengembalianPengembalianCard(
-        nama: "Egi Dwi Saputri",
-        tanggal: "23/01/2026",
-        status: "Pengembalian",
-      ),
-      SizedBox(height: 12),
-      PengembalianPengembalianCard(
-        nama: "Melati Tiara",
-        tanggal: "23/01/2026",
-        status: "Selesai",
-      ),
-    ],
-  ),
-),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              children: const [
+                PengembalianPengembalianCard(
+                  nama: "Egi Dwi Saputri",
+                  tanggal: "23/01/2026",
+                  status: "Pengembalian",
+                ),
+                SizedBox(height: 12),
+                PengembalianPengembalianCard(
+                  nama: "Melati Tiara",
+                  tanggal: "23/01/2026",
+                  status: "Selesai",
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:aplikasi_lispin/screen/admin/dasboard/peminjam_dasboard.dart';
+import 'package:aplikasi_lispin/screen/admin/dasboard/petugas_dasboard.dart';
 import 'package:aplikasi_lispin/screen/peminjam/alat_peminjam_page.dart'
     show AlatPeminjamPage;
 import 'package:aplikasi_lispin/screen/peminjam/peminjaman_page.dart';
@@ -32,66 +33,70 @@ class CustomSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      backgroundColor: const Color(0xFFFFF3E0),
+    // Gunakan Container + ListView agar garis polisinya hilang
+    return Container(
       width: 280,
-      child: Column(
-        children: [
-          /// ===== HEADER =====
-          Container(
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 32),
-            child: Column(
-              children: [
-                const CircleAvatar(
-                  radius: 42,
-                  backgroundColor: Color(0xFFFF9800),
-                  child: Icon(Icons.person, size: 50, color: Colors.white),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Nadya Rapica',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  role.name.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black54,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ListView(
+      color: const Color(0xFFFFF3E0),
+      child: SafeArea(
+        child: Column(
+          children: [
+            /// ===== HEADER =====
+            Container(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+              child: Column(
                 children: [
-                  ..._buildMenuByRole(context),
-
-                  const SizedBox(height: 40),
-
-                  _SidebarItem(
-                    title: 'Log Out',
-                    icon: Icons.logout,
-                    isLogout: true,
-                    onTap: () {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Logged out')),
-                      );
-                    },
+                  const CircleAvatar(
+                    radius: 42,
+                    backgroundColor: Color(0xFFFF9800),
+                    child: Icon(Icons.person, size: 50, color: Colors.white),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Nadya Rapica',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    role.name.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    ..._buildMenuByRole(context),
+
+                    const SizedBox(height: 40),
+
+                    _SidebarItem(
+                      title: 'Log Out',
+                      icon: Icons.logout,
+                      isLogout: true,
+                      onTap: () {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Logged out')),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -111,6 +116,7 @@ class CustomSidebar extends StatelessWidget {
 
       case UserRole.petugas:
         return [
+          _item(context, 'Dashboardpetugas', const PetugasDashboard()),
           _item(context, 'Peminjaman', const PeminjamanPetugasPage()),
           _item(context, 'Pengembalian', const PengembalianPetugasPage()),
           _item(context, 'Laporan', const LaporanPage()),
@@ -118,9 +124,9 @@ class CustomSidebar extends StatelessWidget {
 
       case UserRole.peminjam:
         return [
-          _item(context, 'Dashboard', const DasboardPeminjam()),
+          _item(context, 'Dashboardpeminjam', const DasboardPeminjam()),
           _item(context, 'Alat', const AlatPeminjamPage()),
-          _item(context, 'Peminjaman', const PeminjamanPage()), // ✅ FIX
+          _item(context, 'Peminjaman', const PeminjamanPage()),
           _item(context, 'Pengembalian', const PengembalianpeminjamPage()),
         ];
     }

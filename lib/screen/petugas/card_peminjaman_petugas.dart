@@ -11,7 +11,7 @@ class PeminjamanCard extends StatefulWidget {
     required this.nama,
     required this.tanggal,
     required this.status,
-    required this.statusColor,
+    required this.statusColor, required Null Function() onTapApprove, required Null Function() onTapReject,
   });
 
   @override

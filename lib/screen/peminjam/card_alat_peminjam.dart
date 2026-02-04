@@ -11,22 +11,10 @@ class AlatPeminjamCard extends StatelessWidget {
     required this.onAddToCart,
   });
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'baik':
-        return Colors.green;
-      case 'buruk':
-        return Colors.red;
-      case 'rusak':
-        return Colors.orange;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final statusColor = _getStatusColor(alat.kondisi ?? '');
+    // selalu hijau
+    final statusColor = Colors.green;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -53,17 +41,16 @@ class AlatPeminjamCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.2),
+                  color: statusColor.withOpacity(0.2), // background hijau muda
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
                   'Tersedia',
                   style: TextStyle(
                     fontSize: 10,
-                    color: statusColor,
+                    color: statusColor, // teks hijau
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -83,8 +70,7 @@ class AlatPeminjamCard extends StatelessWidget {
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: alat.gambarUrl != null &&
-                        alat.gambarUrl!.isNotEmpty
+                child: alat.gambarUrl != null && alat.gambarUrl!.isNotEmpty
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(

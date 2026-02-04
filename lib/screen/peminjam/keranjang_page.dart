@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'cart_manager.dart';
-import 'package:aplikasi_lispin/screen/petugas/peminjaman_petugas_page.dart';
-import 'package:aplikasi_lispin/screen/peminjam/peminjaman_manager.dart';
+import 'package:aplikasi_lispin/models/peminjaman_models.dart';
+import 'peminjaman_manager.dart';
+import 'peminjaman_page.dart';
 
 class KeranjangPage extends StatefulWidget {
   const KeranjangPage({super.key});
@@ -21,11 +22,8 @@ class _KeranjangPageState extends State<KeranjangPage> {
       lastDate: DateTime(2100),
       initialDate: DateTime.now(),
     );
-
     if (result != null) {
-      setState(() {
-        tanggalPinjam = result;
-      });
+      setState(() => tanggalPinjam = result);
     }
   }
 
@@ -36,11 +34,8 @@ class _KeranjangPageState extends State<KeranjangPage> {
       lastDate: DateTime(2100),
       initialDate: DateTime.now(),
     );
-
     if (result != null) {
-      setState(() {
-        tanggalKembali = result;
-      });
+      setState(() => tanggalKembali = result);
     }
   }
 
@@ -57,28 +52,15 @@ class _KeranjangPageState extends State<KeranjangPage> {
 
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'Keranjang Peminjaman',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('Keranjang Peminjaman'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Alat',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-
+            const Text('Alat'),
             const SizedBox(height: 10),
 
             if (items.isEmpty)
@@ -102,50 +84,9 @@ class _KeranjangPageState extends State<KeranjangPage> {
                     ),
                     child: Row(
                       children: [
-                        Container(
-                          height: 56,
-                          width: 56,
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black26),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: alat.gambarAlat != null &&
-                                  alat.gambarAlat!.isNotEmpty
-                              ? Image.network(
-                                  alat.gambarAlat!,
-                                  fit: BoxFit.contain,
-                                  errorBuilder:
-                                      (context, error, stackTrace) {
-                                    return const Icon(Icons.image);
-                                  },
-                                )
-                              : const Icon(Icons.image),
-                        ),
-
-                        const SizedBox(width: 12),
-
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                alat.namaAlat ?? '',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              const Text(
-                                '1',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
+                          child: Text(alat.namaAlat ?? ''),
                         ),
-
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
@@ -165,76 +106,40 @@ class _KeranjangPageState extends State<KeranjangPage> {
             Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Tanggal Pinjam',
-                        style: TextStyle(fontSize: 12),
+                  child: GestureDetector(
+                    onTap: _pickTanggalPinjam,
+                    child: Container(
+                      height: 40,
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black12, blurRadius: 4),
+                        ],
                       ),
-                      const SizedBox(height: 6),
-                      GestureDetector(
-                        onTap: _pickTanggalPinjam,
-                        child: Container(
-                          height: 40,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          alignment: Alignment.centerLeft,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            _formatDate(tanggalPinjam),
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                        ),
-                      ),
-                    ],
+                      child: Text(_formatDate(tanggalPinjam)),
+                    ),
                   ),
                 ),
-
                 const SizedBox(width: 12),
-
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Tanggal Kembali',
-                        style: TextStyle(fontSize: 12),
+                  child: GestureDetector(
+                    onTap: _pickTanggalKembali,
+                    child: Container(
+                      height: 40,
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: const [
+                          BoxShadow(color: Colors.black12, blurRadius: 4),
+                        ],
                       ),
-                      const SizedBox(height: 6),
-                      GestureDetector(
-                        onTap: _pickTanggalKembali,
-                        child: Container(
-                          height: 40,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          alignment: Alignment.centerLeft,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            _formatDate(tanggalKembali),
-                            style: const TextStyle(color: Colors.black54),
-                          ),
-                        ),
-                      ),
-                    ],
+                      child: Text(_formatDate(tanggalKembali)),
+                    ),
                   ),
                 ),
               ],
@@ -247,54 +152,31 @@ class _KeranjangPageState extends State<KeranjangPage> {
               height: 48,
               child: ElevatedButton(
                 onPressed: () {
-                  if (items.isEmpty ||
-                      tanggalPinjam == null ||
-                      tanggalKembali == null) {
+                  if (items.isEmpty || tanggalPinjam == null || tanggalKembali == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Lengkapi data peminjaman'),
-                      ),
+                      const SnackBar(content: Text('Lengkapi data peminjaman')),
                     );
                     return;
                   }
 
-                  final now = DateTime.now();
-                  final tanggal =
-                      '${now.day.toString().padLeft(2, '0')}/'
-                      '${now.month.toString().padLeft(2, '0')}/'
-                      '${now.year}';
-
-                  PeminjamanManager.add(
-                    PeminjamanData(
-                      nama: 'Pengajuan baru',
-                      tanggal: tanggal,
-                      status: 'Pengajuan',
-                    ),
-                  );
+                  for (var alat in items) {
+                    PeminjamanManager.tambah(PeminjamanModel(
+                      peminjam: 'Peminjam 1', // bisa diganti sesuai login user
+                      namaAlat: alat.namaAlat ?? '',
+                      tanggalPinjam: _formatDate(tanggalPinjam),
+                      tanggalKembali: _formatDate(tanggalKembali),
+                      status: 'menunggu',
+                    ));
+                  }
 
                   CartManager.clear();
 
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const PeminjamanPetugasPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const PeminjamanPage()),
                   );
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFB300),
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  'Ajukan Peminjaman',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                child: const Text('Ajukan Peminjaman'),
               ),
             ),
           ],
